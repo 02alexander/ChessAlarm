@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/alarmsFragment">
+
+    <fragment
+        android:id="@+id/alarmsFragment"
+        android:name="com.example.chessalarm2.alarms.AlarmsFragment"
+        android:label="AlarmsFragment" >
+        <action
+            android:id="@+id/action_alarmsFragment_to_configureFragment"
+            app:destination="@id/configureFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/configureFragment"
+        android:name="com.example.chessalarm2.configure.ConfigureFragment"
+        android:label="fragment_configure"
+        tools:layout="@layout/fragment_configure" >
+        <argument
+            android:name="alarmId"
+            app:argType="long" />
+    </fragment>
+</navigation>

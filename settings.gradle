@@ -1,0 +1,2 @@
+rootProject.name = "ChessAlarm2"
+include ':app'
