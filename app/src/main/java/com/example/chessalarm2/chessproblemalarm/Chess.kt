@@ -26,63 +26,166 @@ enum class Piece {
 
 class Chess() {
 
-    var board : MutableList<MutableList<Pair<Piece, Player>>>
+    var board : MutableList<MutableList<Pair<Piece, Player>>> // indexed by board[col][row]
     var cur_player = Player.WHITE
     var castling_rights: Array<Boolean> = arrayOf(false, false, false, false) // (white queenside, white kingside, black queenside, black kingside)
+    var threatened_by_black: MutableList<MutableList<Boolean>> // not needed
+    var threatened_by_white: MutableList<MutableList<Boolean>> // not needed
 
     init {
-        val result = mutableListOf<MutableList<Pair<Piece, Player>>>()
-        for (i in 0..BOARD_SIZE) {
-            val lst = mutableListOf<Pair<Piece, Player>>()
-            for (j in 0..BOARD_SIZE) {
-                lst.add(Pair(Piece.EMPTY, Player.WHITE))
-            }
-            result.add(lst)
-        }
-        board = result
+        board = create_blank_board(Pair(Piece.EMPTY, Player.BLACK))
+        threatened_by_black = create_blank_board(false)
+        threatened_by_white = create_blank_board(false)
 
         loadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b - - 0 24")
         //board[0][0] = Pair(Piece.PAWN, Player.BLACK)
     }
 
-    fun legal_moves(row: Int, col: Int): List<Pair<Int, Int>> {
-        val (piece, player) = board[row][col]
+    fun legal_moves(cord: Coordinate): List<Coordinate> {
+        val (piece, player) = this[cord]
         return when(piece) {
-            Piece.KING -> legal_king_moves(row, col, player)
-            Piece.KNIGHT -> legal_knight_moves(row, col, player)
-            Piece.BISHOP -> legal_bishop_moves(row, col, player)
-            Piece.QUEEN -> legal_queen_moves(row, col, player)
-            Piece.PAWN -> legal_pawn_moves(row, col, player)
-            Piece.ROOK -> legal_rook_moves(row, col, player)
+            Piece.KING -> legal_king_moves(cord, player)
+            Piece.KNIGHT -> legal_knight_moves(cord, player)
+            Piece.BISHOP -> legal_bishop_moves(cord, player)
+            Piece.QUEEN -> legal_queen_moves(cord, player)
+            Piece.PAWN -> legal_pawn_moves(cord, player)
+            Piece.ROOK -> legal_rook_moves(cord, player)
             Piece.EMPTY -> listOf()
         }
     }
 
-    fun legal_rook_moves(row: Int, col: Int, player: Player): List<Pair<Int, Int>> {
-        return listOf()
+    // the following functions doesn't take into account that a move might be be illegal because the piece is protecting the king.
+
+    fun legal_king_moves(cord: Coordinate, player: Player): List<Coordinate> {
+        val directions = listOf(
+            Coordinate(1,0),Coordinate(0,1),
+            Coordinate(-1,0), Coordinate(0,-1),
+            Coordinate(1,1),Coordinate(-1,1),
+            Coordinate(-1,-1), Coordinate(1,-1)
+        )
+        val moves = mutableListOf<Coordinate>()
+        for (dir in directions) {
+            if (is_cord_in_board(cord+dir) && this[cord+dir].first == Piece.EMPTY) {
+                moves.add(cord+dir)
+            }
+        }
+        return moves
     }
 
-    fun legal_king_moves(row: Int, col: Int, player: Player): List<Pair<Int, Int>> {
-        return listOf()
+    fun legal_rook_moves(cord: Coordinate, player: Player): List<Coordinate> {
+        val directions = listOf(Coordinate(1,0),Coordinate(0,1),Coordinate(-1,0), Coordinate(0,-1))
+        val moves = mutableListOf<Coordinate>()
+        for (dir in directions) {
+            for (k in 1 until BOARD_SIZE) {
+                if (!is_cord_in_board(cord+dir*k) || this[cord+dir*k].first != Piece.EMPTY) {
+                    break
+                }
+                moves.add(cord+dir*k)
+            }
+        }
+        return moves
     }
 
-    fun legal_queen_moves(row: Int, col: Int, player: Player): List<Pair<Int, Int>> {
-        return listOf()
+    fun legal_queen_moves(cord: Coordinate, player: Player): List<Coordinate> {
+        return listOf(legal_bishop_moves(cord,player), legal_rook_moves(cord,player)).flatten()
     }
 
-    fun legal_pawn_moves(row: Int, col: Int, player: Player): List<Pair<Int, Int>> {
-        return listOf()
+    fun legal_pawn_moves(cord: Coordinate, player: Player): List<Coordinate> {
+        // TODO : can't en passant right now
+
+        val moves = mutableListOf<Coordinate>()
+        if (player == Player.BLACK) {
+            if (this[cord+Coordinate(0,1)].first == Piece.EMPTY) {
+                moves.add(cord+ Coordinate(0,1))
+                if (cord.y == 1 && this[cord+Coordinate(0,2)].first == Piece.EMPTY) {
+                    moves.add(cord+ Coordinate(0,2))
+                }
+            }
+            if (is_cord_in_board(cord+Coordinate(1,1)) &&
+                this[cord+Coordinate(1,1)].second == Player.WHITE &&
+                this[cord+Coordinate(1,1)].first != Piece.EMPTY) {
+                moves.add(cord+Coordinate(1,1))
+            }
+            if (is_cord_in_board(cord+Coordinate(-1,1)) &&
+                this[cord+Coordinate(-1,1)].second == Player.WHITE &&
+                this[cord+Coordinate(-1,1)].first != Piece.EMPTY) {
+                moves.add(cord+Coordinate(-1,1))
+            }
+        } else {
+            if (this[cord+Coordinate(0,-1)].first == Piece.EMPTY) {
+                moves.add(cord+ Coordinate(0,-1))
+                if (cord.y == 6 && this[cord+Coordinate(0,-2)].first == Piece.EMPTY) {
+                    moves.add(cord+Coordinate(0,-2))
+                }
+            }
+            if (is_cord_in_board(cord+Coordinate(1,-1)) &&
+                this[cord+Coordinate(1,-1)].second == Player.BLACK &&
+                this[cord+Coordinate(1,-1)].first != Piece.EMPTY) {
+                moves.add(cord+Coordinate(1,-1))
+            }
+            if (is_cord_in_board(cord+Coordinate(-1,-1)) &&
+                this[cord+Coordinate(-1,-1)].second == Player.BLACK &&
+                this[cord+Coordinate(-1,-1)].first != Piece.EMPTY) {
+                moves.add(cord+Coordinate(-1,-1))
+            }
+        }
+        return moves
     }
 
-    fun legal_knight_moves(row: Int, col: Int, player: Player): List<Pair<Int, Int>> {
-        return listOf()
+    fun legal_knight_moves(cord: Coordinate, player: Player): List<Coordinate> {
+        val directions = listOf<Coordinate>(
+            Coordinate(2,1),Coordinate(2,-1),
+            Coordinate(-2,1),Coordinate(-2,-1),
+            Coordinate(1, 2), Coordinate(-1, 2),
+            Coordinate(1, -2),Coordinate(-1, -2)
+        )
+        val moves = mutableListOf<Coordinate>()
+        for (dir in directions) {
+            if (is_cord_in_board(cord+dir) && this[cord+dir].first == Piece.EMPTY) {
+                moves.add(cord+dir)
+            }
+        }
+        return moves
     }
 
-    fun legal_bishop_moves(row: Int, col: Int, player: Player): List<Pair<Int, Int>> {
-        return listOf()
+    fun legal_bishop_moves(cord: Coordinate, player: Player): List<Coordinate> {
+        val directions = listOf(Coordinate(1,1),Coordinate(-1,1),Coordinate(-1,-1), Coordinate(1,-1))
+        val moves = mutableListOf<Coordinate>()
+        for (dir in directions) {
+            for (k in 1 until BOARD_SIZE) {
+                if (!is_cord_in_board(cord+dir*k) || this[cord+dir*k].first != Piece.EMPTY) {
+                    break
+                }
+                moves.add(cord+dir*k)
+            }
+        }
+        return moves
     }
 
-    operator fun get(index: Int) = board[index]
+    private fun is_king_threatened(cord: Coordinate, player: Player): Boolean {
+        return  true
+    }
+
+    private fun is_cord_in_board(cord: Coordinate): Boolean {
+        return cord.x in 0 until BOARD_SIZE && cord.y in 0 until BOARD_SIZE
+    }
+
+    fun move(src: Coordinate, dst: Coordinate) {
+        this[dst] = this[src]
+        this[src] = Pair(Piece.EMPTY, Player.BLACK)
+    }
+
+    private fun <T> create_blank_board(v: T): MutableList<MutableList<T>>{
+        val result = mutableListOf<MutableList<T>>()
+        for (i in 0..BOARD_SIZE) {
+            val lst = mutableListOf<T>()
+            for (j in 0..BOARD_SIZE) {
+                lst.add(v)
+            }
+            result.add(lst)
+        }
+        return result
+    }
 
     fun loadFEN(FEN: String) {
         val segments = FEN.split(" ")
@@ -135,5 +238,12 @@ class Chess() {
                 castling_rights[3] = true
             }
         }
+    }
+
+    operator fun get(index: Int) = board[index]
+
+    operator fun get(cord: Coordinate) = board[cord.x][cord.y]
+    operator fun set(cord: Coordinate, v: Pair<Piece, Player>) {
+        board[cord.x][cord.y] = v
     }
 }

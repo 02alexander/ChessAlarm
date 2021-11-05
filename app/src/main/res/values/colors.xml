@@ -9,4 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="square_white">#FFF0D9B5</color>
     <color name="square_black">#FFB58863</color>
+    <color name="square_selected">#AA00AA00</color>
+    <color name="legal_move_dot">#88202020</color>
 </resources>

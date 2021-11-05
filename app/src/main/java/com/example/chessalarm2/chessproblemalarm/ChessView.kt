@@ -7,6 +7,7 @@ import android.graphics.Paint
 import android.graphics.Typeface
 import android.util.AttributeSet
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import com.example.chessalarm2.R
@@ -18,9 +19,56 @@ class ChessView @JvmOverloads constructor(
     private var player: Player = Player.WHITE
     private var moveEnabled = true
     private val board = Chess()
+    private var currently_selected: Coordinate? = null
+    private var legal_moves: List<Coordinate>? = null
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        val x = event.x
+        val y = event.y
+        val action = event.action
+        if (action == MotionEvent.ACTION_DOWN) {
+            val (col, row) = xyToBoardCord(x, y)
+            val (piece, player) = board[col][row]
+            Log.d("sdfgsdf", "col="+col.toString()+", row="+row.toString()+", action="+action.toString())
+
+            // removes focus of piece if user clicks on empty square
+            legal_moves?.let {
+                if (!(Coordinate(col,row) in it)) {
+                    currently_selected = null
+                    legal_moves = null
+                }
+            }
+
+            if (piece != Piece.EMPTY) {
+                currently_selected = Coordinate(col,row)
+                legal_moves = board.legal_moves(Coordinate(col, row))
+            }
+
+            Log.d("sdfgsdf", legal_moves.toString())
+            invalidate()
+        }
+        //return true
+        return super.onTouchEvent(event)
+    }
+
+    // returns Pair(board_x,board_y) of cord and Pair(-1,-1) if x,y is outside of board
+    fun xyToBoardCord(x: Float, y: Float): Pair<Int,Int> {
+        val left = 0
+        val right = (1-(left/width))*width
+        val top = (height-right+left)/2
+        val stepSize = (right-left) / BOARD_SIZE
+        val y = y-top
+
+        val cx = x/stepSize
+        val cy = y/stepSize
+        if (cx > BOARD_SIZE || cy > BOARD_SIZE || cx < 0 || cy < 0) {
+            return Pair(-1,-1) // not a valid board coordinate
+        }
+        return Pair(cx.toInt(), cy.toInt())
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -31,6 +79,7 @@ class ChessView @JvmOverloads constructor(
             textSize = 55.0f
             typeface = Typeface.create("", Typeface.BOLD)
             strokeWidth = 4.0f
+            alpha = 255
         }
         val left = 0
         val right = (1-(left/width))*width
@@ -55,12 +104,27 @@ class ChessView @JvmOverloads constructor(
                 }
                 canvas.drawRect((left+stepSize*x).toFloat(), (top+stepSize*y).toFloat(), (left+stepSize*(x+1)).toFloat(), (top+stepSize*(y+1)).toFloat(), paint)
 
+                if (currently_selected == Coordinate(x,y)) {
+                    paint.color = context.getColor(R.color.square_selected)
+                    canvas.drawRect((left+stepSize*x).toFloat(), (top+stepSize*y).toFloat(), (left+stepSize*(x+1)).toFloat(), (top+stepSize*(y+1)).toFloat(), paint)
+                    Log.d("dfgh", currently_selected.toString())
+                }
+
                 val (piece, player) = board[x][y]
                 if (piece != Piece.EMPTY) {
                     val drawable = ResourcesCompat.getDrawable(resources, pieceToDrawable(piece, player), null)!!
                     drawable.setBounds(left+stepSize*x, top+stepSize*y, left+stepSize*(x+1), top+stepSize*(y+1))
                     drawable.draw(canvas)
                 }
+            }
+        }
+
+        legal_moves?.let {
+            for (move in it) {
+                val x = move.x
+                val y = move.y
+                paint.color = context.getColor(R.color.legal_move_dot)
+                canvas.drawCircle((left+stepSize*(x+0.5)).toFloat(), (top+stepSize*(y+0.5)).toFloat(), stepSize*0.15f,paint)
             }
         }
     }
