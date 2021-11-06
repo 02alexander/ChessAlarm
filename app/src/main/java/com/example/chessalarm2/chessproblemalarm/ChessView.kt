@@ -16,7 +16,6 @@ class ChessView @JvmOverloads constructor(
     context: Context?, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    private var player: Player = Player.WHITE
     private var moveEnabled = true
     private val board = Chess()
     private var currently_selected: Coordinate? = null
@@ -30,33 +29,41 @@ class ChessView @JvmOverloads constructor(
         val x = event.x
         val y = event.y
         val action = event.action
-        if (action == MotionEvent.ACTION_DOWN) {
-            val (col, row) = xyToBoardCord(x, y)
-            val (piece, player) = board[col][row]
-            Log.d("sdfgsdf", "col="+col.toString()+", row="+row.toString()+", action="+action.toString())
+        val cord = xyToBoardCord(x, y)
+        if (action == MotionEvent.ACTION_DOWN && board.is_cord_in_board(cord)) {
+            val (piece, player) = board[cord]
+            //Log.d("sdfgsdf", "cord="+cord.toString())
 
             // removes focus of piece if user clicks on empty square
             legal_moves?.let {
-                if (!(Coordinate(col,row) in it)) {
+                if (!(cord in it)) {
+                    currently_selected = null
+                    legal_moves = null
+                } else if (board.cur_player == board[currently_selected!!].second) {
+                    on_move(currently_selected!!, cord)
                     currently_selected = null
                     legal_moves = null
                 }
             }
 
-            if (piece != Piece.EMPTY) {
-                currently_selected = Coordinate(col,row)
-                legal_moves = board.legal_moves(Coordinate(col, row))
+            if (board[cord].first != Piece.EMPTY && board[cord].second == board.cur_player) {
+                currently_selected = cord
+                legal_moves = board.legal_moves(cord)
             }
 
-            Log.d("sdfgsdf", legal_moves.toString())
+            //Log.d("sdfgsdf", legal_moves.toString())
             invalidate()
         }
         //return true
         return super.onTouchEvent(event)
     }
 
+    fun on_move(src: Coordinate, dst: Coordinate) {
+        board.move_piece(src, dst)
+    }
+
     // returns Pair(board_x,board_y) of cord and Pair(-1,-1) if x,y is outside of board
-    fun xyToBoardCord(x: Float, y: Float): Pair<Int,Int> {
+    fun xyToBoardCord(x: Float, y: Float): Coordinate {
         val left = 0
         val right = (1-(left/width))*width
         val top = (height-right+left)/2
@@ -66,12 +73,14 @@ class ChessView @JvmOverloads constructor(
         val cx = x/stepSize
         val cy = y/stepSize
         if (cx > BOARD_SIZE || cy > BOARD_SIZE || cx < 0 || cy < 0) {
-            return Pair(-1,-1) // not a valid board coordinate
+            return Coordinate(-1,-1) // not a valid board coordinate
         }
-        return Pair(cx.toInt(), cy.toInt())
+        return Coordinate(cx.toInt(), cy.toInt())
     }
 
     override fun onDraw(canvas: Canvas) {
+        // TODO : animate moves
+
         super.onDraw(canvas)
         val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             style = Paint.Style.FILL

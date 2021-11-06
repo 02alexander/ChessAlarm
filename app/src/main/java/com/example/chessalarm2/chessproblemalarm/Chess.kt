@@ -6,6 +6,7 @@ import android.graphics.Paint
 import android.graphics.Typeface
 import android.util.Log
 import com.example.chessalarm2.R
+import com.example.chessalarm2.parse_UCI
 
 const val BOARD_SIZE = 8;
 
@@ -37,8 +38,18 @@ class Chess() {
         threatened_by_black = create_blank_board(false)
         threatened_by_white = create_blank_board(false)
 
-        loadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b - - 0 24")
-        //board[0][0] = Pair(Piece.PAWN, Player.BLACK)
+        Log.d("Chess() init", parse_UCI("d3d6 f8d8 d6d8 f6d8").toString())
+        parse_FEN("5rk1/1p3ppp/pq3b2/8/8/1P1Q1N2/P4PPP/3R2K1 w - - 2 27")
+        //parse_FEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 24")
+    }
+
+    fun move_piece(src: Coordinate, dst: Coordinate) {
+        this[dst] = this[src]
+        this[src] = Pair(Piece.EMPTY, Player.BLACK)
+        cur_player = when(cur_player) {
+            Player.BLACK -> Player.WHITE
+            Player.WHITE -> Player.BLACK
+        }
     }
 
     fun legal_moves(cord: Coordinate): List<Coordinate> {
@@ -65,9 +76,13 @@ class Chess() {
         )
         val moves = mutableListOf<Coordinate>()
         for (dir in directions) {
-            if (is_cord_in_board(cord+dir) && this[cord+dir].first == Piece.EMPTY) {
+            if (!is_cord_in_board(cord+dir) || (this[cord+dir].first != Piece.EMPTY && this[cord+dir].second == player)) {
+                continue
+            } else if (this[cord+dir].first != Piece.EMPTY) {
                 moves.add(cord+dir)
+                continue
             }
+            moves.add(cord+dir)
         }
         return moves
     }
@@ -77,7 +92,10 @@ class Chess() {
         val moves = mutableListOf<Coordinate>()
         for (dir in directions) {
             for (k in 1 until BOARD_SIZE) {
-                if (!is_cord_in_board(cord+dir*k) || this[cord+dir*k].first != Piece.EMPTY) {
+                if (!is_cord_in_board(cord+dir*k) || (this[cord+dir*k].first != Piece.EMPTY && this[cord+dir*k].second == player)) {
+                    break
+                } else if (this[cord+dir*k].first != Piece.EMPTY) {
+                    moves.add(cord+dir*k)
                     break
                 }
                 moves.add(cord+dir*k)
@@ -141,7 +159,7 @@ class Chess() {
         )
         val moves = mutableListOf<Coordinate>()
         for (dir in directions) {
-            if (is_cord_in_board(cord+dir) && this[cord+dir].first == Piece.EMPTY) {
+            if (is_cord_in_board(cord+dir) && (this[cord+dir].first == Piece.EMPTY || this[cord+dir].second != player)) {
                 moves.add(cord+dir)
             }
         }
@@ -153,7 +171,10 @@ class Chess() {
         val moves = mutableListOf<Coordinate>()
         for (dir in directions) {
             for (k in 1 until BOARD_SIZE) {
-                if (!is_cord_in_board(cord+dir*k) || this[cord+dir*k].first != Piece.EMPTY) {
+                if (!is_cord_in_board(cord+dir*k) || (this[cord+dir*k].first != Piece.EMPTY && this[cord+dir*k].second == player)) {
+                    break
+                } else if (this[cord+dir*k].first != Piece.EMPTY) {
+                    moves.add(cord+dir*k)
                     break
                 }
                 moves.add(cord+dir*k)
@@ -166,7 +187,7 @@ class Chess() {
         return  true
     }
 
-    private fun is_cord_in_board(cord: Coordinate): Boolean {
+    fun is_cord_in_board(cord: Coordinate): Boolean {
         return cord.x in 0 until BOARD_SIZE && cord.y in 0 until BOARD_SIZE
     }
 
@@ -187,7 +208,9 @@ class Chess() {
         return result
     }
 
-    fun loadFEN(FEN: String) {
+    fun parse_FEN(FEN: String) {
+        // TODO : parse possible en passant targets, halfmove clock and fullmove number. https://www.chess.com/terms/fen-chess#what-is-fen
+
         val segments = FEN.split(" ")
         val piece_segment = segments[0]
         var cur_row = 0
@@ -238,6 +261,8 @@ class Chess() {
                 castling_rights[3] = true
             }
         }
+
+
     }
 
     operator fun get(index: Int) = board[index]

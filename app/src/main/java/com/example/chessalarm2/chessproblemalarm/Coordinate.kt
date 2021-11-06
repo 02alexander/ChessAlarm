@@ -14,6 +14,8 @@ class Coordinate(val x: Int, val y: Int) {
         return Coordinate(x-other.x, y-other.y)
     }
 
+    override fun equals(other: Any?) = (other is Coordinate) && x==other.x && y==other.y
+
     override fun toString(): String {
         return "<"+x.toString()+", "+y.toString()+">"
     }
