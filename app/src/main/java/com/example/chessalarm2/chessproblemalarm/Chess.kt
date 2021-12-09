@@ -1,11 +1,6 @@
 package com.example.chessalarm2.chessproblemalarm
 
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Typeface
 import android.util.Log
-import com.example.chessalarm2.R
 import com.example.chessalarm2.parse_UCI
 
 const val BOARD_SIZE = 8;
@@ -32,6 +27,9 @@ class Chess() {
     var castling_rights: Array<Boolean> = arrayOf(false, false, false, false) // (white queenside, white kingside, black queenside, black kingside)
     var threatened_by_black: MutableList<MutableList<Boolean>> // not needed
     var threatened_by_white: MutableList<MutableList<Boolean>> // not needed
+    var en_passant_target: Coordinate? = null
+    var halfmove_counter: Int = 0
+    var fullmove_counter: Int = 0
 
     init {
         board = create_blank_board(Pair(Piece.EMPTY, Player.BLACK))
@@ -191,7 +189,7 @@ class Chess() {
         return cord.x in 0 until BOARD_SIZE && cord.y in 0 until BOARD_SIZE
     }
 
-    fun move(src: Coordinate, dst: Coordinate) {
+    private fun move(src: Coordinate, dst: Coordinate) {
         this[dst] = this[src]
         this[src] = Pair(Piece.EMPTY, Player.BLACK)
     }
@@ -209,8 +207,6 @@ class Chess() {
     }
 
     fun parse_FEN(FEN: String) {
-        // TODO : parse possible en passant targets, halfmove clock and fullmove number. https://www.chess.com/terms/fen-chess#what-is-fen
-
         val segments = FEN.split(" ")
         val piece_segment = segments[0]
         var cur_row = 0
@@ -247,10 +243,9 @@ class Chess() {
             cur_player = Player.BLACK
         }
 
-        val s = segments[2]
+        val castling_str = segments[2]
         castling_rights = arrayOf(false, false, false, false)
-
-        for (c in s) {
+        for (c in castling_str) {
             if (c == 'Q') {
                 castling_rights[0] = true
             } else if (c == 'q') {
@@ -262,7 +257,16 @@ class Chess() {
             }
         }
 
+        val en_passant_string = segments[3]
+        if (en_passant_string != "-") {
+            en_passant_target = Coordinate(en_passant_string)
+        }
 
+        val halfmove_string = segments[4]
+        halfmove_counter = halfmove_string.toInt()
+
+        val fullmove_string = segments[5]
+        fullmove_counter = fullmove_string.toInt()
     }
 
     operator fun get(index: Int) = board[index]

@@ -11,6 +11,7 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import com.example.chessalarm2.R
+import com.example.chessalarm2.parse_UCI
 
 class ChessView @JvmOverloads constructor(
     context: Context?, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -19,10 +20,20 @@ class ChessView @JvmOverloads constructor(
     private var moveEnabled = true
     private val board = Chess()
     private var currently_selected: Coordinate? = null
+
     private var legal_moves: List<Coordinate>? = null
+
+    //private var solution: List<Pair<Coordinate, Coordinate>>? = null
+    private var solution: List<Pair<Coordinate, Coordinate>> = parse_UCI("d3d6 f8d8 d6d8 f6d8")
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
+    }
+
+    init {
+        Log.d("init", "played first move")
+        board.move_piece(solution[0].first, solution[0].second)
+        solution = solution.slice(1 until solution.size)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -46,20 +57,30 @@ class ChessView @JvmOverloads constructor(
                 }
             }
 
+            // checks if user selects one of its own pieces.
             if (board[cord].first != Piece.EMPTY && board[cord].second == board.cur_player) {
                 currently_selected = cord
                 legal_moves = board.legal_moves(cord)
             }
-
-            //Log.d("sdfgsdf", legal_moves.toString())
             invalidate()
         }
-        //return true
         return super.onTouchEvent(event)
     }
 
     fun on_move(src: Coordinate, dst: Coordinate) {
-        board.move_piece(src, dst)
+        if (solution[0].first != src || solution[0].second != dst) {
+            Log.d("on_move()", "wrong move, correct move is "+solution[0].first.toString()+", "+solution[1].second.toString())
+        } else {
+            board.move_piece(src, dst)
+            if (solution.size <= 1) { // checks if this was the last move in the solutions
+                Log.d("on_move()", "End of solution")
+                return
+            }
+
+            // plays opponents move and then removes the moves played from solution
+            board.move_piece(solution[1].first, solution[1].second)
+            solution = solution.slice(2 until solution.size)
+        }
     }
 
     // returns Pair(board_x,board_y) of cord and Pair(-1,-1) if x,y is outside of board
@@ -116,7 +137,7 @@ class ChessView @JvmOverloads constructor(
                 if (currently_selected == Coordinate(x,y)) {
                     paint.color = context.getColor(R.color.square_selected)
                     canvas.drawRect((left+stepSize*x).toFloat(), (top+stepSize*y).toFloat(), (left+stepSize*(x+1)).toFloat(), (top+stepSize*(y+1)).toFloat(), paint)
-                    Log.d("dfgh", currently_selected.toString())
+                    Log.d("onDraw", "currently_selected = "+currently_selected.toString())
                 }
 
                 val (piece, player) = board[x][y]

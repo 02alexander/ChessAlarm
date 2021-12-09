@@ -1,9 +1,7 @@
 package com.example.chessalarm2
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.chessalarm2.database.Alarm
-import com.example.chessalarm2.database.AlarmsDatabase
+import androidx.appcompat.app.AppCompatActivity
 import com.example.chessalarm2.database.AlarmsDatabaseDao
 import com.example.chessalarm2.databinding.ActivityMainBinding
 

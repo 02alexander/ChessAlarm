@@ -30,8 +30,8 @@ fun parse_UCI(UCI: String): List<Pair<Coordinate, Coordinate>> {
     val moves_string = UCI.split(" ")
     val moves = mutableListOf<Pair<Coordinate, Coordinate>>()
     for (move_string in moves_string) {
-        val src = Coordinate(move_string[0].code-'a'.code, 8-move_string[1].digitToInt())
-        val dst = Coordinate(move_string[2].code-'a'.code, 8-move_string[3].digitToInt())
+        val src = Coordinate(move_string.slice(0..1))
+        val dst = Coordinate(move_string.slice(2..3))
         moves.add(Pair(src,dst))
     }
     return moves
