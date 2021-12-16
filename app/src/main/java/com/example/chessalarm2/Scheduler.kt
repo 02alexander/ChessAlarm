@@ -1,18 +1,13 @@
 package com.example.chessalarm2
 
 import android.app.AlarmManager
-import android.app.Application
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
 import android.util.Log
-import androidx.lifecycle.viewModelScope
 import com.example.chessalarm2.chessproblemalarm.AlarmReceiver
-import com.example.chessalarm2.chessproblemalarm.ChessAlarmActivity
-import com.example.chessalarm2.database.Alarm
-import kotlinx.coroutines.launch
-import java.sql.Timestamp
+import com.example.chessalarm2.database.alarms.Alarm
 import java.util.*
 
 class Scheduler(val context: Context) {

@@ -1,4 +1,4 @@
-package com.example.chessalarm2.database
+package com.example.chessalarm2.database.alarms
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson

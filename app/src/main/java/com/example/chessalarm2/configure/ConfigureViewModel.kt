@@ -1,20 +1,13 @@
 package com.example.chessalarm2.configure
 
-import android.app.AlarmManager
 import android.app.Application
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.chessalarm2.Scheduler
-import com.example.chessalarm2.chessproblemalarm.ChessAlarmActivity
-import com.example.chessalarm2.database.Alarm
-import com.example.chessalarm2.database.AlarmsDatabaseDao
+import com.example.chessalarm2.database.alarms.Alarm
+import com.example.chessalarm2.database.alarms.AlarmsDatabaseDao
 import kotlinx.coroutines.launch
-import java.util.*
 
 class ConfigureViewModel(val database: AlarmsDatabaseDao, alarmId: Long, application: Application): AndroidViewModel(application) {
 

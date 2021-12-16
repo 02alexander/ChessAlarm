@@ -1,4 +1,4 @@
-package com.example.chessalarm2.database
+package com.example.chessalarm2.database.alarms
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

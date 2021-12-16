@@ -9,7 +9,7 @@
             type="com.example.chessalarm2.alarms.AlarmsListener" />
         <variable
             name="alarm"
-            type="com.example.chessalarm2.database.Alarm" />
+            type="com.example.chessalarm2.database.alarms.Alarm" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

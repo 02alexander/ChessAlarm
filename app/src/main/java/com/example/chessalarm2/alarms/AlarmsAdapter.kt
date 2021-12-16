@@ -3,7 +3,7 @@ package com.example.chessalarm2.alarms
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.chessalarm2.database.Alarm
+import com.example.chessalarm2.database.alarms.Alarm
 import com.example.chessalarm2.databinding.ListItemAlarmBinding
 
 class AlarmsAdapter(val clickListener: AlarmsListener) : RecyclerView.Adapter<AlarmsAdapter.ViewHolder>() {

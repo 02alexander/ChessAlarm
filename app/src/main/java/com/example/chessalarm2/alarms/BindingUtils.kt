@@ -2,7 +2,7 @@ package com.example.chessalarm2.alarms
 
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
-import com.example.chessalarm2.database.Alarm
+import com.example.chessalarm2.database.alarms.Alarm
 import com.example.chessalarm2.daysToString
 import java.text.SimpleDateFormat
 import java.util.*

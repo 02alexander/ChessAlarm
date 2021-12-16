@@ -3,13 +3,11 @@ package com.example.chessalarm2.configure
 import android.app.Dialog
 import android.app.TimePickerDialog
 import android.os.Bundle
-import android.text.format.DateFormat.is24HourFormat
 import androidx.fragment.app.DialogFragment
 import java.util.*
 import android.text.format.DateFormat
 import android.util.Log
 import android.widget.TimePicker
-import com.example.chessalarm2.database.Alarm
 
 class TimePickerFragment(val viewModel: ConfigureViewModel) : DialogFragment(), TimePickerDialog.OnTimeSetListener {
 

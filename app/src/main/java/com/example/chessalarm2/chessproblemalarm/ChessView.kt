@@ -11,29 +11,22 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import com.example.chessalarm2.R
-import com.example.chessalarm2.parse_UCI
 
 class ChessView @JvmOverloads constructor(
     context: Context?, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
     private var moveEnabled = true
-    private val board = Chess()
+    val board = Chess()
     private var currently_selected: Coordinate? = null
 
     private var legal_moves: List<Coordinate>? = null
 
-    //private var solution: List<Pair<Coordinate, Coordinate>>? = null
-    private var solution: List<Pair<Coordinate, Coordinate>> = parse_UCI("d3d6 f8d8 d6d8 f6d8")
+
+    private var onChessMoveListener: (src: Coordinate, dst: Coordinate) -> Unit = ::on_move
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-    }
-
-    init {
-        Log.d("init", "played first move")
-        board.move_piece(solution[0].first, solution[0].second)
-        solution = solution.slice(1 until solution.size)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -51,7 +44,7 @@ class ChessView @JvmOverloads constructor(
                     currently_selected = null
                     legal_moves = null
                 } else if (board.cur_player == board[currently_selected!!].second) {
-                    on_move(currently_selected!!, cord)
+                    onChessMoveListener(currently_selected!!, cord)
                     currently_selected = null
                     legal_moves = null
                 }
@@ -67,20 +60,12 @@ class ChessView @JvmOverloads constructor(
         return super.onTouchEvent(event)
     }
 
-    fun on_move(src: Coordinate, dst: Coordinate) {
-        if (solution[0].first != src || solution[0].second != dst) {
-            Log.d("on_move()", "wrong move, correct move is "+solution[0].first.toString()+", "+solution[1].second.toString())
-        } else {
-            board.move_piece(src, dst)
-            if (solution.size <= 1) { // checks if this was the last move in the solutions
-                Log.d("on_move()", "End of solution")
-                return
-            }
+    fun setOnChessMoveListener(f: (src: Coordinate, dst: Coordinate) -> Unit) {
+        this.onChessMoveListener = f
+    }
 
-            // plays opponents move and then removes the moves played from solution
-            board.move_piece(solution[1].first, solution[1].second)
-            solution = solution.slice(2 until solution.size)
-        }
+    fun on_move(src: Coordinate, dst: Coordinate) {
+
     }
 
     // returns Pair(board_x,board_y) of cord and Pair(-1,-1) if x,y is outside of board

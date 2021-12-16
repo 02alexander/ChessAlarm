@@ -1,8 +1,10 @@
 package com.example.chessalarm2
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.chessalarm2.database.AlarmsDatabaseDao
+import com.example.chessalarm2.chessproblemalarm.ChessAlarmActivity
+import com.example.chessalarm2.database.alarms.AlarmsDatabaseDao
 import com.example.chessalarm2.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -12,6 +14,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_chess_alarm)
+        val intent = Intent(this, ChessAlarmActivity::class.java)
+        startActivity(intent)
+        //setContentView(R.layout.activity_chess_alarm)
     }
+
 }

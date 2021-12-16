@@ -7,8 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
 import com.example.chessalarm2.Scheduler
-import com.example.chessalarm2.database.Alarm
-import com.example.chessalarm2.database.AlarmsDatabaseDao
+import com.example.chessalarm2.database.alarms.Alarm
+import com.example.chessalarm2.database.alarms.AlarmsDatabaseDao
 import kotlinx.coroutines.launch
 
 class AlarmsViewModel(

@@ -26,6 +26,8 @@ fun daysToString(days: List<Int>) : String {
     return res
 }
 
+//fun fetch_puzzle(rating)
+
 fun parse_UCI(UCI: String): List<Pair<Coordinate, Coordinate>> {
     val moves_string = UCI.split(" ")
     val moves = mutableListOf<Pair<Coordinate, Coordinate>>()

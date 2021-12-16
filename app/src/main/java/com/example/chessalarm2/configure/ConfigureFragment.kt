@@ -1,33 +1,20 @@
 package com.example.chessalarm2.configure
 
 import android.app.AlertDialog
-import android.app.TimePickerDialog
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.os.Parcel
-import android.os.Parcelable
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Spinner
-import android.widget.TimePicker
-import androidx.activity.result.contract.ActivityResultContract
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import com.example.chessalarm2.MainActivity
 import com.example.chessalarm2.R
-import com.example.chessalarm2.database.Alarm
-import com.example.chessalarm2.database.AlarmsDatabase
-import com.example.chessalarm2.database.AlarmsDatabaseDao
+import com.example.chessalarm2.database.alarms.Alarm
+import com.example.chessalarm2.database.alarms.AlarmsDatabase
+import com.example.chessalarm2.database.alarms.AlarmsDatabaseDao
 import com.example.chessalarm2.databinding.FragmentConfigureBinding
 import com.example.chessalarm2.daysToString
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import org.jetbrains.annotations.Contract
 import java.text.SimpleDateFormat
 import java.util.*
 

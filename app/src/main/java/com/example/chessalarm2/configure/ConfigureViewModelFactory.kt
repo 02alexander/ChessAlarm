@@ -3,8 +3,7 @@ package com.example.chessalarm2.configure
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.chessalarm2.alarms.AlarmsViewModel
-import com.example.chessalarm2.database.AlarmsDatabaseDao
+import com.example.chessalarm2.database.alarms.AlarmsDatabaseDao
 
 class ConfigureViewModelFactory(
     private val dataSource: AlarmsDatabaseDao,

@@ -3,9 +3,9 @@ package com.example.chessalarm2
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.example.chessalarm2.database.Alarm
-import com.example.chessalarm2.database.AlarmsDatabase
-import com.example.chessalarm2.database.AlarmsDatabaseDao
+import com.example.chessalarm2.database.alarms.Alarm
+import com.example.chessalarm2.database.alarms.AlarmsDatabase
+import com.example.chessalarm2.database.alarms.AlarmsDatabaseDao
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
