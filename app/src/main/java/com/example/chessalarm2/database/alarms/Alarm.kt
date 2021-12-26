@@ -20,4 +20,7 @@ data class Alarm (
 
     @ColumnInfo
     var isEnabled: Boolean = false,
+
+    @ColumnInfo
+    var audioId: Long = -1
 )

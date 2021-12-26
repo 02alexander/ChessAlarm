@@ -1,6 +1,10 @@
 package com.example.chessalarm2.alarms
 
+import android.database.Cursor
+import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -50,19 +54,19 @@ class AlarmsFragment : Fragment() {
             }
         }))
 
-        alarmsViewModel.navigateUpListener.observe(viewLifecycleOwner, Observer { alarmId ->
-            alarmId?.let {
-                this.findNavController().navigate(
-                    AlarmsFragmentDirections.actionAlarmsFragmentToConfigureFragment(alarmId))
-                alarmsViewModel.onConfigureNavigated()
-            }
-        })
-
         binding.alarmsList.adapter = adapter
 
         alarmsViewModel.alarms.observe(this, {
             it?.let {
                 adapter.data = it
+            }
+        })
+
+        alarmsViewModel.navigateUpListener.observe(viewLifecycleOwner, Observer { alarmId ->
+            alarmId?.let {
+                this.findNavController().navigate(
+                    AlarmsFragmentDirections.actionAlarmsFragmentToConfigureFragment(alarmId))
+                alarmsViewModel.onConfigureNavigated()
             }
         })
 
@@ -73,4 +77,5 @@ class AlarmsFragment : Fragment() {
 
         return binding.root
     }
+
 }

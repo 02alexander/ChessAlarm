@@ -1,5 +1,10 @@
 package com.example.chessalarm2
 
+import android.content.Context
+import android.database.Cursor
+import android.media.MediaPlayer
+import android.net.Uri
+import android.provider.MediaStore
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chessalarm2.chessproblemalarm.Coordinate
@@ -38,3 +43,44 @@ fun parse_UCI(UCI: String): List<Pair<Coordinate, Coordinate>> {
     }
     return moves
 }
+
+private fun playAudioFromPath(context: Context, mediaPlayer: MediaPlayer, path: String) {
+    val uri = Uri.parse("file:///"+path)
+    mediaPlayer.stop()
+    //mediaPlayer = MediaPlayer()
+    mediaPlayer.setDataSource(context, uri)
+    mediaPlayer.prepare()
+    mediaPlayer.start()
+}
+
+fun getAlarmSounds(context: Context) : List<Sound> {
+    val list:MutableList<Sound> = mutableListOf()
+
+    val uri: Uri = MediaStore.Audio.Media.INTERNAL_CONTENT_URI
+
+    val type = MediaStore.Audio.Media.IS_ALARM
+    val selection = "$type != 0"
+    val sortOrder = MediaStore.Audio.Media.TITLE + " ASC"
+    val cursor: Cursor? = context.contentResolver.query(
+        uri, // Uri
+        null, // Projection
+        selection, // Selection
+        null, // Selection arguments
+        sortOrder // Sort order
+    )
+    if (cursor!= null && cursor.moveToFirst()){
+        val path:Int = cursor.getColumnIndex(MediaStore.Audio.Media.DATA)
+        val id:Int = cursor.getColumnIndex(MediaStore.Audio.Media._ID)
+        val title:Int = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)
+
+        do {
+            val audioPath: String = cursor.getString(path)
+            val audioTitle:String = cursor.getString(title)
+            val audioId:Long = cursor.getLong(id)
+            list.add(Sound(audioId, audioTitle, audioPath))
+        }while (cursor.moveToNext())
+    }
+    return list
+}
+
+data class Sound(val id: Long, val title:String, val path: String)
