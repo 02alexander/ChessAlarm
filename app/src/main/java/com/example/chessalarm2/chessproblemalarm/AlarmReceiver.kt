@@ -6,18 +6,41 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.chessalarm2.R
+import com.example.chessalarm2.database.alarms.AlarmsDatabase
+import com.example.chessalarm2.playAudioFromId
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class AlarmReceiver : BroadcastReceiver() {
+
+    companion object {
+
+        // mediaPlayer starts in AlarmReceiver but its ChessAlarmActivity that stops this mediaPlayer which is a global variable.
+        @JvmField
+        var mediaPlayer: MediaPlayer? = null
+    }
+
     override fun onReceive(context: Context, intent: Intent?) {
 
         Log.d("onReceive", "Received signal to start alarm")
 
         val t = Intent(context, ChessAlarmActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(context, 0, t, 0)
+        val alarmId = intent!!.extras!!.getLong("alarmId")
+        t.putExtra("alarmId", alarmId)
+
+        val database = AlarmsDatabase.getInstance(context).alarmsDatabaseDao
+        GlobalScope.launch {
+            val alarm = database.get(alarmId)!!
+            mediaPlayer = MediaPlayer()
+            playAudioFromId(context, mediaPlayer!!, alarm.audioId)
+        }
+
+        val pendingIntent = PendingIntent.getActivity(context, 0, t, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         createNotificationChannel(context, notificationManager)
@@ -32,6 +55,8 @@ class AlarmReceiver : BroadcastReceiver() {
         with(notificationManager) {
             notify(0, builder.build())
         }
+
+        Log.d("AlarmReceiver", "onReceive done")
 
     }
 

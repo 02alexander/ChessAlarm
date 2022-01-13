@@ -16,6 +16,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //val intent = Intent(this, ChessAlarmActivity::class.java)
+        //intent.putExtra("audioId", 0)
         //startActivity(intent)
         setContentView(R.layout.activity_main)
     }

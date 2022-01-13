@@ -27,7 +27,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class ConfigureFragment : Fragment(), OnItemSelectedListener {
-
     lateinit var database: AlarmsDatabaseDao
     lateinit var configureViewModel: ConfigureViewModel
     lateinit var binding: FragmentConfigureBinding

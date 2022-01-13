@@ -38,13 +38,15 @@ class Scheduler(val context: Context) {
             alarmIntent
         )
         //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_DAY, alarmIntent)
+
     }
 
     private fun getAlarmIntent(alarm: Alarm) : PendingIntent {
         //val application = context.getApplication<Application>()
         val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
             intent.action = "com.example.alarmmanager"
-            PendingIntent.getBroadcast(context, alarm.alarmId.toInt(), intent, 0)
+            intent.putExtra("alarmId", alarm.alarmId)
+            PendingIntent.getBroadcast(context, alarm.alarmId.toInt(), intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
         return alarmIntent
     }

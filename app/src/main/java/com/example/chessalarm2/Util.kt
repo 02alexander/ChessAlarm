@@ -5,6 +5,7 @@ import android.database.Cursor
 import android.media.MediaPlayer
 import android.net.Uri
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chessalarm2.chessproblemalarm.Coordinate
@@ -44,10 +45,30 @@ fun parse_UCI(UCI: String): List<Pair<Coordinate, Coordinate>> {
     return moves
 }
 
-private fun playAudioFromPath(context: Context, mediaPlayer: MediaPlayer, path: String) {
+private fun getAudioPath(context: Context, id: Long) : String? {
+    val uri: Uri = MediaStore.Audio.Media.INTERNAL_CONTENT_URI
+    val type = MediaStore.Audio.Media.IS_ALARM
+    val selection = "$type != 0 AND ${MediaStore.Audio.Media._ID} == $id"
+    val sortOrder = MediaStore.Audio.Media.TITLE + " ASC"
+    val cursor: Cursor? = context.contentResolver.query(
+        uri,
+        null,
+        selection,
+        null,
+        sortOrder
+    )
+    if (cursor!= null && cursor.moveToFirst()){
+        val path:Int = cursor.getColumnIndex(MediaStore.Audio.Media.DATA)
+        val audioPath: String = cursor.getString(path)
+        return audioPath
+    }
+    return null
+}
+
+fun playAudioFromId(context: Context, mediaPlayer: MediaPlayer, id: Long) {
+    val path = getAudioPath(context, id)
     val uri = Uri.parse("file:///"+path)
-    mediaPlayer.stop()
-    //mediaPlayer = MediaPlayer()
+    //mediaPlayer.reset()
     mediaPlayer.setDataSource(context, uri)
     mediaPlayer.prepare()
     mediaPlayer.start()
