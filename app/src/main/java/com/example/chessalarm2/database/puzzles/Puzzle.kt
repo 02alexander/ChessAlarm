@@ -28,4 +28,7 @@ data class Puzzle(
     @ColumnInfo
     val nbplays: Int,
 
+    @ColumnInfo
+    val beenPlayed: Boolean,
+
     )

@@ -37,6 +37,7 @@ class AlarmReceiver : BroadcastReceiver() {
         GlobalScope.launch {
             val alarm = database.get(alarmId)!!
             mediaPlayer = MediaPlayer()
+            Log.d("onReceive", alarm.audioId.toString())
             playAudioFromId(context, mediaPlayer!!, alarm.audioId)
         }
 

@@ -1,12 +1,10 @@
 package com.example.chessalarm2
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import com.example.chessalarm2.chessproblemalarm.ChessAlarmActivity
 import com.example.chessalarm2.database.alarms.AlarmsDatabaseDao
 import com.example.chessalarm2.databinding.ActivityMainBinding
+import com.example.chessalarm2.puzzlesource.PopulateDatabase
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,6 +17,7 @@ class MainActivity : AppCompatActivity() {
         //intent.putExtra("audioId", 0)
         //startActivity(intent)
         setContentView(R.layout.activity_main)
+        PopulateDatabase.populateDatabase(application)
     }
 
 }
