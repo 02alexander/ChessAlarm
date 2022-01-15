@@ -1,8 +1,5 @@
 package com.example.chessalarm2.chessproblemalarm
 
-import android.util.Log
-import com.example.chessalarm2.parse_UCI
-
 const val BOARD_SIZE = 8;
 
 enum class Player {
@@ -36,8 +33,8 @@ class Chess() {
         threatened_by_black = create_blank_board(false)
         threatened_by_white = create_blank_board(false)
 
-        Log.d("Chess() init", parse_UCI("d3d6 f8d8 d6d8 f6d8").toString())
-        parse_FEN("5rk1/1p3ppp/pq3b2/8/8/1P1Q1N2/P4PPP/3R2K1 w - - 2 27")
+        //Log.d("Chess() init", parse_UCI("d3d6 f8d8 d6d8 f6d8").toString())
+        //parse_FEN("5rk1/1p3ppp/pq3b2/8/8/1P1Q1N2/P4PPP/3R2K1 w - - 2 27")
         //parse_FEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 24")
     }
 
@@ -206,7 +203,7 @@ class Chess() {
         return result
     }
 
-    fun parse_FEN(FEN: String) {
+    fun loadFEN(FEN: String) {
         val segments = FEN.split(" ")
         val piece_segment = segments[0]
         var cur_row = 0

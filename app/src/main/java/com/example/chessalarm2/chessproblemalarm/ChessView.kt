@@ -68,6 +68,16 @@ class ChessView @JvmOverloads constructor(
 
     }
 
+    fun loadFEN(FEN: String) {
+        board.loadFEN(FEN)
+        invalidate()
+    }
+
+    fun move_piece(src: Coordinate, dst: Coordinate) {
+        board.move_piece(src, dst)
+        invalidate()
+    }
+
     // returns Pair(board_x,board_y) of cord and Pair(-1,-1) if x,y is outside of board
     fun xyToBoardCord(x: Float, y: Float): Coordinate {
         val left = 0

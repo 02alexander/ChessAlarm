@@ -1,11 +1,10 @@
 package com.example.chessalarm2.database.puzzles
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 
 @Dao
 interface PuzzlesDatabaseDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(puzzle: Puzzle)
 
     @Update
@@ -17,9 +16,9 @@ interface PuzzlesDatabaseDao {
     @Query("DELETE FROM puzzles_table")
     suspend fun clear()
 
-    @Query("SELECT * FROM puzzles_table WHERE rating < :rating ORDER BY rating DESC")
-    fun getEligiblePuzzles(rating: Int): LiveData<List<Puzzle>>
+    @Query("SELECT * FROM puzzles_table WHERE rating < :rating AND NOT beenPlayed ORDER BY rating DESC")
+    suspend fun getEligiblePuzzles(rating: Int): List<Puzzle>
 
-    @Query("SELECT COUNT(*)")
+    @Query("SELECT COUNT(*) FROM puzzles_table")
     suspend fun count(): Long
 }
