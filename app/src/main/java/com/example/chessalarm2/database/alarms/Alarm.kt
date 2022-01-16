@@ -13,7 +13,7 @@ data class Alarm (
     var time: Long = System.currentTimeMillis(),
 
     @ColumnInfo
-    var difficulty: Int = 1,
+    var rating: Int = 1400,
 
     @ColumnInfo
     var days: List<Int> = listOf(),

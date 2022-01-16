@@ -24,7 +24,8 @@ class AlarmsViewModel(
     val alarmsString = Transformations.map(alarms) { alarms ->
         var res: String = ""
         for (alarm in alarms) {
-            res += alarm.difficulty.toString()+" "+alarm.time.toString()
+            res += alarm.rating.toString()+" "+alarm.time.toString()
+            //res += alarm.difficulty.toString()+" "+alarm.time.toString()
         }
         res
     }

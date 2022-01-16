@@ -1,19 +1,14 @@
 package com.example.chessalarm2.configure
 
 import android.app.AlertDialog
-import android.database.Cursor
-import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.*
-import androidx.fragment.app.Fragment
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
-import android.widget.SpinnerAdapter
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.chessalarm2.R
 import com.example.chessalarm2.Sound
@@ -26,7 +21,7 @@ import com.example.chessalarm2.getAlarmSounds
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ConfigureFragment : Fragment(), OnItemSelectedListener {
+class ConfigureFragment : Fragment() {
     lateinit var database: AlarmsDatabaseDao
     lateinit var configureViewModel: ConfigureViewModel
     lateinit var binding: FragmentConfigureBinding
@@ -34,17 +29,6 @@ class ConfigureFragment : Fragment(), OnItemSelectedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-    }
-
-    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        configureViewModel.alarm.value?.let {
-            Log.d("Spinner", position.toString())
-            it.difficulty = position
-        }
-    }
-
-    override fun onNothingSelected(parent: AdapterView<*>?) {
-
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
@@ -76,16 +60,6 @@ class ConfigureFragment : Fragment(), OnItemSelectedListener {
 
         sounds = getAlarmSounds(this.requireContext())
 
-        ArrayAdapter.createFromResource(
-            this.requireContext(),
-            R.array.difficulties_array,
-            android.R.layout.simple_spinner_item
-        ).also {  adapter ->
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            binding.spinnerDifficulty.adapter = adapter
-        }
-        binding.spinnerDifficulty.onItemSelectedListener = this
-
         configureViewModel.alarm.observe(this.viewLifecycleOwner, {
             it?.let {
                 Log.d("onCreateView()", "configureViewModel changed")
@@ -97,13 +71,11 @@ class ConfigureFragment : Fragment(), OnItemSelectedListener {
         binding.editTime.setOnClickListener {
             timepicker.show(parentFragmentManager, "timePicker")
         }
-
         binding.editDays.setOnClickListener {
             showDaysDialog()
         }
 
         populateAudioSpinner()
-
         return binding.root
     }
 
@@ -120,7 +92,7 @@ class ConfigureFragment : Fragment(), OnItemSelectedListener {
         val checked_days = BooleanArray(7) {
             it in configureViewModel.alarm.value!!.days
         }
-        var builder = AlertDialog.Builder(this.context)
+        val builder = AlertDialog.Builder(this.context)
         builder.setTitle("Choose days.")
         builder.setMultiChoiceItems(R.array.days_of_the_week, checked_days, { dialog, which, isChecked ->
             checked_days[which] = isChecked
@@ -141,8 +113,9 @@ class ConfigureFragment : Fragment(), OnItemSelectedListener {
     fun updateView(alarm: Alarm) {
         val date = Date(alarm.time)
         val format = SimpleDateFormat("HH:mm")
-        binding.editTime.setText(format.format(date))
-        binding.spinnerDifficulty.setSelection(alarm.difficulty)
+        Log.d("ConfigureFragment updateView", "alarm.time=${alarm.time} text=${format.format(date)}")
+        binding.editTime.text = format.format(date).toString()
+        binding.editRating.setText(alarm.rating.toString())
         binding.editDays.text = daysToString(alarm.days)
         for (i in sounds.indices) {
             if (alarm.audioId == sounds[i].id) {

@@ -5,12 +5,12 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.chessalarm2.R
 import com.example.chessalarm2.database.alarms.AlarmsDatabase
 import com.example.chessalarm2.database.puzzles.PuzzlesDatabase
 import com.example.chessalarm2.databinding.ActivityChessAlarmBinding
 import com.example.chessalarm2.parse_UCI
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 // https://android--code.blogspot.com/2018/05/android-kotlin-get-alarm-ringtone.html
@@ -46,19 +46,22 @@ class ChessAlarmActivity : AppCompatActivity() {
 
         binding.chessView.setOnChessMoveListener(::on_move)
 
-        GlobalScope.launch {
-            val puzzles = puzzleDatabase.getEligiblePuzzles(2000)
-            val puzzle = puzzles[0]
-            Log.d("chess_alarm", "puzzle=${puzzle.toString()}")
-            Log.d("chess_alarm", "moves=${puzzle.moves}")
-            solution = parse_UCI(puzzle.moves)
-            binding.chessView.loadFEN(puzzle.FEN)
-            binding.chessView.board.move_piece(solution!![0].first, solution!![0].second)
-            solution = solution!!.slice(1 until solution!!.size)
-            Log.d("chess_alarm", "board=${binding.chessView.board.board}")
-            puzzle.beenPlayed = true
-            puzzleDatabase.update(puzzle)
-        }
+        viewModel.alarm.observe(this, {
+            lifecycleScope.launch {
+                val puzzles = puzzleDatabase.getEligiblePuzzles(it!!.rating)
+                val puzzle = puzzles[0]
+                Log.d("chess_alarm", "puzzle=${puzzle.toString()}")
+                Log.d("chess_alarm", "moves=${puzzle.moves}")
+                solution = parse_UCI(puzzle.moves)
+                binding.chessView.loadFEN(puzzle.FEN)
+                binding.chessView.board.move_piece(solution!![0].first, solution!![0].second)
+                solution = solution!!.slice(1 until solution!!.size)
+                Log.d("chess_alarm", "board=${binding.chessView.board.board}")
+                puzzle.beenPlayed = true
+                puzzleDatabase.update(puzzle)
+            }
+        })
+
     }
 
     fun on_move(src: Coordinate, dst: Coordinate) {

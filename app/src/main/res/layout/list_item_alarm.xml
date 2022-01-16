@@ -33,13 +33,13 @@
             tools:text="07:00" />
 
         <TextView
-            android:id="@+id/difficulty"
+            android:id="@+id/rating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="8dp"
             android:textColor="@color/white"
-            app:alarmDifficultyString="@{alarm}"
+            app:alarmRatingString="@{alarm}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/time"
             app:layout_constraintTop_toBottomOf="@+id/time"

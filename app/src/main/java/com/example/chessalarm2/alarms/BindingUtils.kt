@@ -9,13 +9,9 @@ import java.util.*
 
 class BindingUtils {}
 
-@BindingAdapter("alarmDifficultyString")
-fun TextView.setDifficultyString(item: Alarm) {
-    text = when (item.difficulty) {
-        0 -> "Easy"
-        1 -> "Normal"
-        else -> "Hard"
-    }
+@BindingAdapter("alarmRatingString")
+fun TextView.setRatingString(item: Alarm) {
+    text = item.rating.toString()
 }
 
 @BindingAdapter("alarmTimeString")
