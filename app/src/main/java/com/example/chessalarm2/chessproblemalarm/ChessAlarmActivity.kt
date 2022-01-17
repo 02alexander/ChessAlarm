@@ -54,7 +54,7 @@ class ChessAlarmActivity : AppCompatActivity() {
                 Log.d("chess_alarm", "moves=${puzzle.moves}")
                 solution = parse_UCI(puzzle.moves)
                 binding.chessView.loadFEN(puzzle.FEN)
-                binding.chessView.board.move_piece(solution!![0].first, solution!![0].second)
+                binding.chessView.move_piece(solution!![0].first, solution!![0].second)
                 solution = solution!!.slice(1 until solution!!.size)
                 Log.d("chess_alarm", "board=${binding.chessView.board.board}")
                 puzzle.beenPlayed = true
@@ -71,8 +71,9 @@ class ChessAlarmActivity : AppCompatActivity() {
                     "on_move()",
                     "wrong move, correct move is " + it[0].first.toString() + ", " + it[1].second.toString()
                 )
+                binding.chessView.indicateWrongMove(src, dst)
             } else {
-                binding.chessView.board.move_piece(src, dst)
+                binding.chessView.move_piece(src, dst)
                 if (it.size <= 1) { // checks if this was the last move in the solutions
                     Log.d("on_move()", "You solved the puzzle!")
                     viewModel.stopAlarmAudio()
@@ -81,7 +82,7 @@ class ChessAlarmActivity : AppCompatActivity() {
                     return
                 }
                 // plays opponents move and then removes the moves played from solution
-                binding.chessView.board.move_piece(it[1].first, it[1].second)
+                binding.chessView.move_piece(it[1].first, it[1].second)
                 solution = it.slice(2 until it.size)
             }
         }

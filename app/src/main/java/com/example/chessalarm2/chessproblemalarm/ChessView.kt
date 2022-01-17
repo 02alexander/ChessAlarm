@@ -1,5 +1,6 @@
 package com.example.chessalarm2.chessproblemalarm
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -9,8 +10,11 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.animation.doOnEnd
+import androidx.core.animation.doOnStart
 import androidx.core.content.res.ResourcesCompat
 import com.example.chessalarm2.R
+import java.util.*
 
 class ChessView @JvmOverloads constructor(
     context: Context?, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -22,6 +26,8 @@ class ChessView @JvmOverloads constructor(
 
     private var legal_moves: List<Coordinate>? = null
 
+    private var animationValue: Float? = null
+    private var moveAnimationQueue: Queue<Triple<Coordinate, Coordinate, Pair<Piece, Player>>> = LinkedList()
 
     private var onChessMoveListener: (src: Coordinate, dst: Coordinate) -> Unit = ::on_move
 
@@ -74,8 +80,39 @@ class ChessView @JvmOverloads constructor(
     }
 
     fun move_piece(src: Coordinate, dst: Coordinate) {
+        Log.d("piece_animation", "piece moved")
         board.move_piece(src, dst)
-        invalidate()
+        moveAnimationQueue.add(Triple(src, dst, board[dst.x][dst.y]))
+        playNextAnimation()
+    }
+
+    fun playNextAnimation() {
+        if (moveAnimationQueue.size == 0) {
+            return
+        }
+        val moveValueAnimator = ValueAnimator.ofFloat(0.0f, 1.0f)
+        moveValueAnimator.duration = 200
+        moveValueAnimator.doOnEnd {
+            Log.d("piece_animation", "end")
+            moveAnimationQueue.poll()
+            animationValue = null
+            playNextAnimation()
+        }
+        moveValueAnimator.addUpdateListener {
+            Log.d("piece_animation", "update")
+            animationValue = it.animatedValue as Float
+            invalidate()
+        }
+        moveValueAnimator.doOnStart {
+            Log.d("piece_animation", "update")
+        }
+        moveValueAnimator.start()
+    }
+
+    fun indicateWrongMove(src: Coordinate, dst: Coordinate) {
+        moveAnimationQueue.add(Triple(src, dst, board[src.x][src.y]))
+        moveAnimationQueue.add(Triple(dst, src, board[src.x][src.y]))
+        playNextAnimation()
     }
 
     // returns Pair(board_x,board_y) of cord and Pair(-1,-1) if x,y is outside of board
@@ -92,6 +129,23 @@ class ChessView @JvmOverloads constructor(
             return Coordinate(-1,-1) // not a valid board coordinate
         }
         return Coordinate(cx.toInt(), cy.toInt())
+    }
+
+    fun boardCordToxy(cord: Coordinate): Pair<Float, Float> {
+        val left = 0
+        val right = (1-(left/width))*width
+        val top = (height-right+left)/2
+        val bottom = (height+right-left)/2
+        val stepSize = (right-left) / BOARD_SIZE
+        return Pair((left+stepSize*cord.x).toFloat(), (top+stepSize*cord.y).toFloat())
+    }
+
+    private fun movingPiecexy(src: Coordinate, dst: Coordinate): Pair<Float, Float> {
+        val srcxy = boardCordToxy(src)
+        val dstxy = boardCordToxy(dst)
+        val posx = srcxy.first+animationValue!!*(dstxy.first-srcxy.first)
+        val posy = srcxy.second+animationValue!!*(dstxy.second-srcxy.second)
+        return Pair(posx, posy)
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -127,21 +181,55 @@ class ChessView @JvmOverloads constructor(
                 } else {
                     paint.color = context.getColor(R.color.square_white)
                 }
-                canvas.drawRect((left+stepSize*x).toFloat(), (top+stepSize*y).toFloat(), (left+stepSize*(x+1)).toFloat(), (top+stepSize*(y+1)).toFloat(), paint)
+
+                //canvas.drawRect((left+stepSize*x).toFloat(), (top+stepSize*y).toFloat(), (left+stepSize*(x+1)).toFloat(), (top+stepSize*(y+1)).toFloat(), paint)
+                val topleft = boardCordToxy(Coordinate(x,y))
+                val botright = boardCordToxy(Coordinate(x+1,y+1))
+                canvas.drawRect(topleft.first, topleft.second, botright.first, botright.second, paint)
 
                 if (currently_selected == Coordinate(x,y)) {
                     paint.color = context.getColor(R.color.square_selected)
-                    canvas.drawRect((left+stepSize*x).toFloat(), (top+stepSize*y).toFloat(), (left+stepSize*(x+1)).toFloat(), (top+stepSize*(y+1)).toFloat(), paint)
+                    //canvas.drawRect((left+stepSize*x).toFloat(), (top+stepSize*y).toFloat(), (left+stepSize*(x+1)).toFloat(), (top+stepSize*(y+1)).toFloat(), paint)
+                    canvas.drawRect(topleft.first, topleft.second, botright.first, botright.second, paint)
                     Log.d("onDraw", "currently_selected = "+currently_selected.toString())
                 }
-
+                if (moveAnimationQueue.size >= 1) {
+                    val src = moveAnimationQueue.peek().first
+                    val dst = moveAnimationQueue.peek().second
+                    if (Coordinate(x, y) == dst || Coordinate(x,y) == src) {
+                        continue
+                    }
+                }
                 val (piece, player) = board[x][y]
                 if (piece != Piece.EMPTY) {
                     val drawable = ResourcesCompat.getDrawable(resources, pieceToDrawable(piece, player), null)!!
-                    drawable.setBounds(left+stepSize*x, top+stepSize*y, left+stepSize*(x+1), top+stepSize*(y+1))
+                    //drawable.setBounds(left+stepSize*x, top+stepSize*y, left+stepSize*(x+1), top+stepSize*(y+1))
+                    drawable.setBounds(topleft.first.toInt(), topleft.second.toInt(), botright.first.toInt(), botright.second.toInt())
                     drawable.draw(canvas)
                 }
             }
+        }
+        if (moveAnimationQueue.size >= 1) {
+            val src = moveAnimationQueue.peek().first
+            val dst = moveAnimationQueue.peek().second
+            val (piece, player) = moveAnimationQueue.peek().third
+            Log.d("piece_animation", "")
+            val mtopleft = movingPiecexy(src, dst)
+            val mbotright = movingPiecexy(src+ Coordinate(1,1), dst+Coordinate(1,1))
+            /*val piece: Piece
+            val player: Player
+            if (board[dst.x][dst.y].first != Piece.EMPTY) {
+                val tpl = board[dst.x][dst.y]
+                piece = tpl.first
+                player = tpl.second
+            } else {
+                val tpl =  board[src.x][src.y]
+                piece = tpl.first
+                player = tpl.second
+            }*/
+            val drawable = ResourcesCompat.getDrawable(resources, pieceToDrawable(piece, player), null)!!
+            drawable.setBounds(mtopleft.first.toInt(), mtopleft.second.toInt(), mbotright.first.toInt(), mbotright.second.toInt())
+            drawable.draw(canvas)
         }
 
         legal_moves?.let {
