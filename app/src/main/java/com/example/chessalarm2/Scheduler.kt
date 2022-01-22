@@ -30,12 +30,12 @@ class Scheduler(val context: Context) {
             c.time = date
             val calendar: Calendar = Calendar.getInstance().apply {
                 timeInMillis = System.currentTimeMillis()
-                if (timeInMillis < System.currentTimeMillis()) {
-                    add(Calendar.DAY_OF_YEAR,7)
-                }
                 set(Calendar.HOUR_OF_DAY, c.get(Calendar.HOUR_OF_DAY))
                 set(Calendar.MINUTE, c.get(Calendar.MINUTE))
                 set(Calendar.DAY_OF_WEEK, day+2)
+            }
+            if (calendar.timeInMillis < System.currentTimeMillis()) {
+                calendar.add(Calendar.DAY_OF_YEAR,7)
             }
             val alarmIntent = getAlarmIntent(alarm, day)
             Log.d("scheduler", "set alarm at "+Date(calendar.timeInMillis).toString())

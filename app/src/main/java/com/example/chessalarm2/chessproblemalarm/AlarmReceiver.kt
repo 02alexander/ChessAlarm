@@ -54,8 +54,8 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher_background)
-            .setContentTitle("textTitle")
-            .setContentText("textContent")
+            .setContentTitle("Chess Alarm")
+            .setContentText("Press to start solving the problem.")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setFullScreenIntent(pendingIntent, true)
 

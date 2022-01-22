@@ -11,35 +11,29 @@ import kotlinx.coroutines.launch
 
 class ConfigureViewModel(val database: AlarmsDatabaseDao, alarmId: Long, application: Application): AndroidViewModel(application) {
 
+    var old_alarm: Alarm? = null
     val alarm = MutableLiveData<Alarm>(Alarm())
     private val scheduler = Scheduler(application)
 
     init {
         viewModelScope.launch {
             database.get(alarmId).let {
+                old_alarm = it
                 alarm.value = it
             }
         }
     }
 
-    // Save the alarm in the database and also changes the pending alarm if it's enabled.
-    // NOTE, new_alarm must the same alarmId as this.alarm
-    fun updateAlarm(new_alarm: Alarm) {
-        assert(alarm.value!!.alarmId == new_alarm.alarmId)
-        if (alarm.value!!.isEnabled) {
-            scheduler.disableAlarm(alarm.value!!)
-        }
-        alarm.value = new_alarm
-        if (alarm.value!!.isEnabled) {
-            scheduler.enableAlarm(alarm.value!!)
-        }
-        saveAlarm()
-    }
-
     fun saveAlarm() {
         viewModelScope.launch {
-            alarm.value?.let {
-                database.update(it)
+            alarm.value?.let { new_alarm ->
+                old_alarm?.let {
+                    if (it.isEnabled) {
+                        scheduler.disableAlarm(it)
+                        scheduler.enableAlarm(new_alarm)
+                    }
+                    database.update(new_alarm)
+                }
             }
         }
     }
