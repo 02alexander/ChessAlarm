@@ -3,11 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable/edit_text_border.xml" value="0.36666666666666664" />
         <entry key="app/src/main/res/layout/activity_chess_alarm.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.19427083333333334" />
+        <entry key="app/src/main/res/layout/activity_select_days.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/fragment_alarms.xml" value="0.35052083333333334" />
-        <entry key="app/src/main/res/layout/fragment_configure.xml" value="0.199438202247191" />
-        <entry key="app/src/main/res/layout/list_item_alarm.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/fragment_configure.xml" value="0.30337078651685395" />
+        <entry key="app/src/main/res/layout/list_item_alarm.xml" value="0.5" />
         <entry key="app/src/main/res/layout/text_item_view.xml" value="0.19427083333333334" />
       </map>
     </option>

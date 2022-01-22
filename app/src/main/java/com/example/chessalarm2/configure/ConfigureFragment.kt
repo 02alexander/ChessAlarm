@@ -10,6 +10,7 @@ import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.core.text.HtmlCompat.fromHtml
 import androidx.core.widget.doOnTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -125,13 +126,13 @@ class ConfigureFragment : Fragment() {
         val format = SimpleDateFormat("HH:mm")
         Log.d("ConfigureFragment updateView", "alarm.time=${alarm.time} text=${format.format(date)}")
         if (binding.editTime.text != format.format(date).toString()) {
-            binding.editTime.text = format.format(date).toString()
+            binding.editTime.text = fromHtml("<b>Time: </b>" + format.format(date).toString(), 0)
         }
         if (binding.editRating.text.toString() != alarm.rating.toString()) {
             binding.editRating.setText(alarm.rating.toString())
         }
         if (binding.editDays.text != daysToString(alarm.days)) {
-            binding.editDays.text = daysToString(alarm.days)
+            binding.editDays.text = fromHtml("<b>Days: </b>" +daysToString(alarm.days), 0)
         }
         for (i in sounds.indices) {
             if (alarm.audioId == sounds[i].id) {

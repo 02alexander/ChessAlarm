@@ -14,7 +14,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:hint="Time"
+            android:background="@drawable/edit_text_border"
+            android:padding="3dp"
+            android:hint="time"
+            android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -22,9 +25,12 @@
             android:id="@+id/editDays"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_border"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="TextView"
+            android:padding="3dp"
+            android:hint="days"
+            android:textSize="20sp"
             app:layout_constraintStart_toStartOf="@+id/editTime"
             tools:layout_editor_absoluteY="108dp" />
 

@@ -11,4 +11,6 @@
     <color name="square_black">#FFB58863</color>
     <color name="square_selected">#AA00AA00</color>
     <color name="legal_move_dot">#88202020</color>
+    <color name="background">#ff333333</color>
+    <color name="on_background">#ff282828</color>
 </resources>
