@@ -15,8 +15,35 @@
         <com.example.chessalarm2.chessproblemalarm.ChessView
             android:id="@+id/chessView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/playerToMoveTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_marginStart="24dp"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@+id/playerToMoveImageView"
+            app:layout_constraintStart_toEndOf="@+id/playerToMoveImageView"
+            app:layout_constraintTop_toTopOf="@+id/playerToMoveImageView"
+            app:layout_constraintVertical_bias="0.44" />
+
+        <ImageView
+            android:id="@+id/playerToMoveImageView"
+            android:layout_width="54dp"
+            android:layout_height="55dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/chessView"
+            app:srcCompat="@drawable/ic_wk" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

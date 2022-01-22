@@ -5,7 +5,6 @@ import android.database.Cursor
 import android.media.MediaPlayer
 import android.net.Uri
 import android.provider.MediaStore
-import android.util.Log
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chessalarm2.chessproblemalarm.Coordinate
@@ -57,6 +56,7 @@ private fun getAudioPath(context: Context, id: Long) : String? {
         null,
         sortOrder
     )
+
     if (cursor!= null && cursor.moveToFirst()){
         val path:Int = cursor.getColumnIndex(MediaStore.Audio.Media.DATA)
         val audioPath: String = cursor.getString(path)
@@ -66,7 +66,14 @@ private fun getAudioPath(context: Context, id: Long) : String? {
 }
 
 fun playAudioFromId(context: Context, mediaPlayer: MediaPlayer, id: Long) {
-    val path = getAudioPath(context, id)
+    var new_id = 0L
+    if (id == -1L) {
+        val sound = getDefaultSound(context)
+        new_id = sound.id
+    } else {
+        new_id = id
+    }
+    val path = getAudioPath(context, new_id)
     val uri = Uri.parse("file:///"+path)
     //mediaPlayer.reset()
     mediaPlayer.setDataSource(context, uri)
@@ -102,6 +109,11 @@ fun getAlarmSounds(context: Context) : List<Sound> {
         }while (cursor.moveToNext())
     }
     return list
+}
+
+fun getDefaultSound(context: Context) : Sound {
+    val sounds = getAlarmSounds(context)
+    return sounds[0]
 }
 
 data class Sound(val id: Long, val title:String, val path: String)

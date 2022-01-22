@@ -61,12 +61,26 @@ class ChessAlarmActivity : AppCompatActivity() {
                 binding.chessView.loadFEN(puzzle.FEN)
                 binding.chessView.move_piece(solution!![0].first, solution!![0].second)
                 solution = solution!!.slice(1 until solution!!.size)
+
+                updatePlayerToMove()
+
                 Log.d("chess_alarm", "board=${binding.chessView.board.board}")
                 puzzle.beenPlayed = true
                 puzzleDatabase.update(puzzle)
             }
         })
         turnScreenOnAndKeyguardOff()
+    }
+
+    private fun updatePlayerToMove() {
+        val player = binding.chessView.board.cur_player
+        if (player == Player.BLACK) {
+            binding.playerToMoveTextView.text = "Black to move"
+            binding.playerToMoveImageView.setImageResource(R.drawable.ic_bk)
+        } else {
+            binding.playerToMoveTextView.text = "White to move"
+            binding.playerToMoveImageView.setImageResource(R.drawable.ic_wk)
+        }
     }
 
     override fun onDestroy() {

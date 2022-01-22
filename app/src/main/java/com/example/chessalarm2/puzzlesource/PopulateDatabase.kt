@@ -34,7 +34,7 @@ class PopulateDatabase{
 
                 val file = application.assets.open("lichess_db_puzzle.csv").reader()
                 val reader = CSVReaderBuilder(file).withSkipLines(count.toInt()).build()
-
+                reader.skip(count.toInt())
                 for (line in reader) {
                     val puzzleId = line[0]
                     val FEN = line[1]

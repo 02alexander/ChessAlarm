@@ -19,9 +19,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".chessproblemalarm.ChessAlarmActivity">
-
-        </activity>
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".chessproblemalarm.ChessAlarmActivity" />
 
         <activity
             android:theme="@style/Theme.ChessAlarm2.CustomTheme"
