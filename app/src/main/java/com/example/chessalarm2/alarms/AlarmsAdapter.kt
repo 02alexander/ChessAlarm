@@ -47,7 +47,10 @@ class AlarmsAdapter(val clickListener: AlarmsListener) : RecyclerView.Adapter<Al
     }
 }
 
-class AlarmsListener(val clickListener: (alarmId: Long) -> Unit, val toggleListener : (alarmId: Long, isCheched: Boolean) -> Unit) {
+class AlarmsListener(val clickListener: (alarmId: Long) -> Unit,
+                     val onDeleteListener: (alarmId: Long) -> Unit,
+                     val toggleListener : (alarmId: Long, isCheched: Boolean) -> Unit) {
     fun onClick(alarm: Alarm) = clickListener(alarm.alarmId)
+    fun onClickDelete(alarm: Alarm) = onDeleteListener(alarm.alarmId)
     fun onToggle(alarm: Alarm, isChecked: Boolean) = toggleListener(alarm.alarmId, isChecked)
 }

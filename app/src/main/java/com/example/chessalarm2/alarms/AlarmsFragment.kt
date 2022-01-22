@@ -39,6 +39,8 @@ class AlarmsFragment : Fragment() {
         val scheduler = Scheduler(this.requireContext())
         val adapter = AlarmsAdapter(AlarmsListener({ alarmId ->
             alarmsViewModel.onAlarmClicked(alarmId)
+        }, { alarmId ->
+            alarmsViewModel.onDeleteAlarm(alarmId)
         }, { alarmId, isChecked ->
             lifecycleScope.launch {
                 Log.d("AlarmFragment", "isEnabled toggled")
@@ -53,7 +55,6 @@ class AlarmsFragment : Fragment() {
                 database.update(alarm)
             }
         }))
-
         binding.alarmsList.adapter = adapter
 
         alarmsViewModel.alarms.observe(this, {

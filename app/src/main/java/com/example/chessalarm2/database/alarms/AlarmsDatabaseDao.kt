@@ -15,6 +15,9 @@ interface AlarmsDatabaseDao {
     @Update
     suspend fun update(alarm: Alarm)
 
+    @Query("DELETE FROM alarms_table WHERE alarmId = :key")
+    suspend fun delete(key: Long)
+
     @Query("SELECT * from alarms_table WHERE alarmId = :key")
     suspend fun get(key: Long): Alarm?
 

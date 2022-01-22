@@ -40,6 +40,18 @@ class AlarmsViewModel(
         }
     }
 
+    fun onDeleteAlarm(alarmId: Long) {
+        viewModelScope.launch {
+            Log.d("delete_alarm", "deleted alarm with id=$alarmId")
+            val alarm = database.get(alarmId)!!
+            if (alarm.isEnabled) {
+                val scheduler = Scheduler(getApplication())
+                scheduler.disableAlarm(alarm)
+            }
+            database.delete(alarmId)
+        }
+    }
+
     fun onAlarmClicked(id: Long) {
         _navigateToConfigure.value = id
     }
