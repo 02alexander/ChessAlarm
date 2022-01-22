@@ -7,6 +7,8 @@ import android.view.*
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
+import android.widget.Toast
+import androidx.core.widget.doOnTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -43,6 +45,12 @@ class ConfigureFragment : Fragment() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        Log.d("configure_fragment", "onPause() called")
+        configureViewModel.saveAlarm()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -73,6 +81,18 @@ class ConfigureFragment : Fragment() {
         }
         binding.editDays.setOnClickListener {
             showDaysDialog()
+        }
+        binding.editRating.doOnTextChanged { text, start, before, count ->
+            Log.d("configure_fragment", "rating edited, text=$text, start=$start, before=$before, count=$count")
+
+            try {
+                val rating = text.toString().toInt()
+                configureViewModel.alarm.value = configureViewModel.alarm.value?.copy(rating = rating)
+                Log.d("configure_fragment", "new alarm = ${configureViewModel.alarm.value}")
+            } catch (e: NumberFormatException) {
+                val toast = Toast.makeText(application.applicationContext, "Invalid rating input. Must be an integer.", Toast.LENGTH_SHORT)
+                toast.show()
+            }
         }
 
         populateAudioSpinner()
@@ -114,9 +134,15 @@ class ConfigureFragment : Fragment() {
         val date = Date(alarm.time)
         val format = SimpleDateFormat("HH:mm")
         Log.d("ConfigureFragment updateView", "alarm.time=${alarm.time} text=${format.format(date)}")
-        binding.editTime.text = format.format(date).toString()
-        binding.editRating.setText(alarm.rating.toString())
-        binding.editDays.text = daysToString(alarm.days)
+        if (binding.editTime.text != format.format(date).toString()) {
+            binding.editTime.text = format.format(date).toString()
+        }
+        if (binding.editRating.text.toString() != alarm.rating.toString()) {
+            binding.editRating.setText(alarm.rating.toString())
+        }
+        if (binding.editDays.text != daysToString(alarm.days)) {
+            binding.editDays.text = daysToString(alarm.days)
+        }
         for (i in sounds.indices) {
             if (alarm.audioId == sounds[i].id) {
                 binding.spinnerAudio.setSelection(i)
