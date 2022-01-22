@@ -3,7 +3,9 @@ package com.example.chessalarm2.configure
 import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
@@ -31,18 +33,6 @@ class ConfigureFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.action_save -> {
-            Log.d("SaveButton", "pressed")
-            //configureViewModel.alarm.value!!.difficulty =
-            configureViewModel.saveAlarm()
-            true
-        }
-        else -> {
-            super.onOptionsItemSelected(item)
-        }
     }
 
     override fun onPause() {
@@ -148,11 +138,6 @@ class ConfigureFragment : Fragment() {
                 binding.spinnerAudio.setSelection(i)
             }
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.options_menu, menu)
     }
 }
 
