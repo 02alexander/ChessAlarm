@@ -25,5 +25,8 @@ interface AlarmsDatabaseDao {
     suspend fun clear()
 
     @Query("SELECT * FROM alarms_table ORDER BY alarmId DESC")
+    suspend fun blockingGetAllAlarms(): List<Alarm>
+
+    @Query("SELECT * FROM alarms_table ORDER BY alarmId DESC")
     fun getAllAlarms(): LiveData<List<Alarm>>
 }
