@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.core.text.HtmlCompat.fromHtml
 import androidx.core.widget.doOnTextChanged
 import androidx.databinding.DataBindingUtil
@@ -39,6 +38,13 @@ class ConfigureFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         Log.d("configure_fragment", "onPause() called")
+        configureViewModel.alarm.value?.let {
+            if (it.rating < 700) {
+                it.rating = 700
+            } else if (it.rating > 3000) {
+                it.rating = 3000
+            }
+        }
         configureViewModel.saveAlarm()
     }
 
@@ -75,14 +81,13 @@ class ConfigureFragment : Fragment() {
         }
         binding.editRating.doOnTextChanged { text, start, before, count ->
             Log.d("configure_fragment", "rating edited, text=$text, start=$start, before=$before, count=$count")
-
             try {
-                val rating = text.toString().toInt()
+                var rating = text.toString().toInt()
                 configureViewModel.alarm.value = configureViewModel.alarm.value?.copy(rating = rating)
                 Log.d("configure_fragment", "new alarm = ${configureViewModel.alarm.value}")
             } catch (e: NumberFormatException) {
-                val toast = Toast.makeText(application.applicationContext, "Invalid rating input. Must be an integer.", Toast.LENGTH_SHORT)
-                toast.show()
+                //val toast = Toast.makeText(application.applicationContext, "Invalid rating input. Must be an integer.", Toast.LENGTH_SHORT)
+                //toast.show()
             }
         }
 

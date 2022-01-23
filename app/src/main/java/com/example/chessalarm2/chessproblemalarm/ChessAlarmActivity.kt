@@ -5,6 +5,8 @@ import android.app.KeyguardManager
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
@@ -51,7 +53,11 @@ class ChessAlarmActivity : AppCompatActivity() {
 
         binding.chessView.setOnChessMoveListener(::on_move)
 
+        stopAlarmInNMinutes(60)
+
+        // called once alarm has been fetched from the database.
         viewModel.alarm.observe(this, {
+
             lifecycleScope.launch {
                 val puzzles = puzzleDatabase.getEligiblePuzzles(it!!.rating)
                 val puzzle = puzzles[0]
@@ -70,6 +76,13 @@ class ChessAlarmActivity : AppCompatActivity() {
             }
         })
         turnScreenOnAndKeyguardOff()
+    }
+
+    private fun stopAlarmInNMinutes(minutes: Int) {
+        Handler(Looper.getMainLooper()).postDelayed({
+            on_solved()
+        }, 1000*60*minutes.toLong())
+
     }
 
     private fun updatePlayerToMove() {
@@ -99,10 +112,7 @@ class ChessAlarmActivity : AppCompatActivity() {
             } else {
                 binding.chessView.move_piece(src, dst)
                 if (it.size <= 1) { // checks if this was the last move in the solutions
-                    Log.d("on_move()", "You solved the puzzle!")
-                    viewModel.stopAlarmAudio()
-                    AlarmReceiver.mediaPlayer?.stop()
-                    finish()
+                    on_solved()
                     return
                 }
                 // plays opponents move and then removes the moves played from solution
@@ -110,6 +120,13 @@ class ChessAlarmActivity : AppCompatActivity() {
                 solution = it.slice(2 until it.size)
             }
         }
+    }
+
+    private fun on_solved() {
+        Log.d("on_move()", "You solved the puzzle!")
+        viewModel.stopAlarmAudio()
+        AlarmReceiver.mediaPlayer?.stop()
+        finish()
     }
 
 }
