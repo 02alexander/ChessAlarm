@@ -41,13 +41,13 @@ class Scheduler(val context: Context) {
             Log.d("scheduler", "set alarm at "+Date(calendar.timeInMillis).toString())
             /*alarmManager.set(
                 AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime() + 1 * 1000,
+                SystemClock.elapsedRealtime() + 10 * 1000,
                 alarmIntent
             )*/
-            alarmManager.setRepeating(
+            alarmManager.setExact(
                 AlarmManager.RTC_WAKEUP,
                 calendar.timeInMillis,
-                AlarmManager.INTERVAL_DAY*7,
+                //AlarmManager.INTERVAL_DAY*7,
                 alarmIntent
             )
         }

@@ -12,6 +12,7 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.chessalarm2.R
+import com.example.chessalarm2.Scheduler
 import com.example.chessalarm2.database.alarms.AlarmsDatabase
 import com.example.chessalarm2.playAudioFromId
 import kotlinx.coroutines.GlobalScope
@@ -45,6 +46,10 @@ class AlarmReceiver : BroadcastReceiver() {
             )
             Log.d("onReceive", alarm.audioId.toString())
             playAudioFromId(context, mediaPlayer!!, alarm.audioId)
+
+            val scheduler = Scheduler(context)
+            scheduler.disableAlarm(alarm)
+            scheduler.enableAlarm(alarm)
         }
 
         val pendingIntent = PendingIntent.getActivity(context, 0, t, PendingIntent.FLAG_UPDATE_CURRENT)
