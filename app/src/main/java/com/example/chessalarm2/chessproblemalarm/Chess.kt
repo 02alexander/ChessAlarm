@@ -1,5 +1,7 @@
 package com.example.chessalarm2.chessproblemalarm
 
+import android.util.Log
+
 const val BOARD_SIZE = 8;
 
 enum class Player {
@@ -178,8 +180,88 @@ class Chess() {
         return moves
     }
 
-    private fun is_king_threatened(cord: Coordinate, player: Player): Boolean {
-        return  true
+    fun legal_piece_moves(cord: Coordinate, player: Player, piece: Piece): List<Coordinate> {
+        return when(piece) {
+            Piece.BISHOP -> legal_bishop_moves(cord, player)
+            Piece.EMPTY -> listOf()
+            Piece.KING -> legal_king_moves(cord,player)
+            Piece.KNIGHT -> legal_knight_moves(cord, player)
+            Piece.PAWN -> legal_pawn_moves(cord, player)
+            Piece.QUEEN -> legal_queen_moves(cord, player)
+            Piece.ROOK -> legal_rook_moves(cord, player)
+        }
+    }
+
+    fun is_in_checkmate(player: Player): Boolean {
+        if (!is_in_check(player)) {
+            return false
+        }
+        for (x in 0..7) {
+            for (y in 0..7) {
+                val cord = Coordinate(x, y)
+                if (get(cord).second != player) {
+                    continue
+                }
+                val piece = get(cord).first
+
+                val moves = legal_piece_moves(cord, player, piece)
+                for (move in moves) {
+                    val cpy = copy()
+                    cpy.move_piece(cord, move)
+                    if (!cpy.is_in_check(player)) {
+                        Log.d("chess", "not checkmate: <$cord, $move>")
+                        return false
+                    }
+                }
+            }
+        }
+        return true
+    }
+
+    fun is_in_check(player: Player): Boolean {
+        return is_piece_threatened(get_king_location(player)!!, player)
+    }
+
+    private fun get_king_location(player: Player): Coordinate? {
+        for (x in 0..7) {
+            for (y in 0..7) {
+                val cord = Coordinate(x, y)
+                if (get(cord).first == Piece.KING && get(cord).second == player) {
+                    return cord
+                }
+            }
+        }
+        return null
+    }
+
+    private fun is_piece_threatened(cord: Coordinate, player: Player): Boolean {
+
+        // checks for every piece which results in redundant checking (combine queen, rook, bishop)
+        val pieces = listOf<Piece>(Piece.BISHOP, Piece.KING, Piece.KNIGHT, Piece.PAWN, Piece.QUEEN, Piece.ROOK)
+        for (piece in pieces) {
+            for (move in legal_piece_moves(cord, player, piece)) {
+                if (get(move).first == piece && get(move).second != player) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    fun copy(): Chess {
+        val cpy = Chess()
+        cpy.board = mutableListOf()
+        for (c in board) {
+            val l = mutableListOf<Pair<Piece, Player>>()
+            l.addAll(c)
+            cpy.board.add(l)
+        }
+        cpy.cur_player = cur_player
+        cpy.castling_rights = castling_rights
+        cpy.en_passant_target = en_passant_target
+        cpy.halfmove_counter = halfmove_counter
+        cpy.fullmove_counter = fullmove_counter
+        return cpy
     }
 
     fun is_cord_in_board(cord: Coordinate): Boolean {

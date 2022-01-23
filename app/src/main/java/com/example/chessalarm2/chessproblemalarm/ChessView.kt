@@ -11,7 +11,6 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.animation.doOnEnd
-import androidx.core.animation.doOnStart
 import androidx.core.content.res.ResourcesCompat
 import com.example.chessalarm2.R
 import java.util.*
@@ -99,12 +98,8 @@ class ChessView @JvmOverloads constructor(
             playNextAnimation()
         }
         moveValueAnimator.addUpdateListener {
-            Log.d("piece_animation", "update")
             animationValue = it.animatedValue as Float
             invalidate()
-        }
-        moveValueAnimator.doOnStart {
-            Log.d("piece_animation", "update")
         }
         moveValueAnimator.start()
     }
@@ -168,7 +163,7 @@ class ChessView @JvmOverloads constructor(
         canvas.drawRect(0.0f, 0.0f, width.toFloat(), height.toFloat(), paint)
         //canvas.drawLine(left.toFloat(), top.toFloat(), left.toFloat(), bottom.toFloat(), paint)
         val stepSize = (right-left) / BOARD_SIZE
-        Log.d("onDraw", "stepSize="+stepSize.toString()+", "+"top="+top.toString()+", bottom="+bottom.toString())
+        //Log.d("onDraw", "stepSize="+stepSize.toString()+", "+"top="+top.toString()+", bottom="+bottom.toString())
         /*for (i in 0..BOARD_SIZE) {
             canvas.drawLine(left.toFloat(), (top-stepSize*i).toFloat(), right.toFloat(), (top-stepSize*i).toFloat(), paint)
             canvas.drawLine((left+stepSize*i).toFloat(), top.toFloat(), (left+stepSize*i).toFloat(), bottom.toFloat(), paint)
@@ -213,7 +208,6 @@ class ChessView @JvmOverloads constructor(
             val src = moveAnimationQueue.peek().first
             val dst = moveAnimationQueue.peek().second
             val (piece, player) = moveAnimationQueue.peek().third
-            Log.d("piece_animation", "")
             val mtopleft = movingPiecexy(src, dst)
             val mbotright = movingPiecexy(src+ Coordinate(1,1), dst+Coordinate(1,1))
             /*val piece: Piece

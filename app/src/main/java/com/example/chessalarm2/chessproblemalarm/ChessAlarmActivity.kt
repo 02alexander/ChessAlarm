@@ -55,6 +55,8 @@ class ChessAlarmActivity : AppCompatActivity() {
 
         stopAlarmInNMinutes(60)
 
+        //binding.chessView.loadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+
         // called once alarm has been fetched from the database.
         viewModel.alarm.observe(this, {
 
@@ -101,8 +103,33 @@ class ChessAlarmActivity : AppCompatActivity() {
         turnScreenOffAndKeyguardOn()
     }
 
+    // used for debugging Chess
+    fun temp_on_move(src: Coordinate, dst: Coordinate) {
+        binding.chessView.move_piece(src, dst)
+        if (binding.chessView.board.is_in_check(Player.BLACK)) {
+            Log.d("chess", "black king checked")
+        } else if (binding.chessView.board.is_in_check(Player.WHITE)) {
+            Log.d("chess", "white king checked")
+        }
+
+        if (binding.chessView.board.is_in_checkmate(Player.BLACK)) {
+            Log.d("chess", "black is checkmated")
+        } else if (binding.chessView.board.is_in_checkmate(Player.WHITE)) {
+            Log.d("chess", "white king is checkmated")
+        }
+
+    }
+
     fun on_move(src: Coordinate, dst: Coordinate) {
         solution?.let {
+
+            val cpy = binding.chessView.board.copy()
+            cpy.move_piece(src, dst)
+            if (cpy.is_in_checkmate(cpy.cur_player)) {
+                on_solved()
+                return
+            }
+
             if (it[0].first != src || it[0].second != dst) {
                 Log.d(
                     "on_move()",
