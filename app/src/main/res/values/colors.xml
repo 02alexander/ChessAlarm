@@ -4,6 +4,8 @@
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_500">#FF009688</color>
+    <color name="teal_900">#FF004D40</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
@@ -13,5 +15,7 @@
     <color name="legal_move_dot">#88202020</color>
     <color name="background">#ff333333</color>
     <color name="on_background">#ff282828</color>
+    <color name="on_on_background">#ff202020</color>
     <color name="promote_background">#ff282838</color>
+    <color name="gray">#ffc0c0c0</color>
 </resources>

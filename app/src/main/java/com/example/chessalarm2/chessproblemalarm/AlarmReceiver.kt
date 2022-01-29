@@ -25,6 +25,8 @@ class AlarmReceiver : BroadcastReceiver() {
         // mediaPlayer starts in AlarmReceiver but its ChessAlarmActivity that stops this mediaPlayer which is a global variable.
         @JvmField
         var mediaPlayer: MediaPlayer? = null
+
+        const val NOTIFICATION_ID = 12345
     }
 
     override fun onReceive(context: Context, intent: Intent?) {
@@ -67,7 +69,7 @@ class AlarmReceiver : BroadcastReceiver() {
             .setFullScreenIntent(pendingIntent, true)
 
         with(notificationManager) {
-            notify(0, builder.build())
+            notify(NOTIFICATION_ID, builder.build())
         }
 
         Log.d("AlarmReceiver", "onReceive done")

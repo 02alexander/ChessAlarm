@@ -16,7 +16,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/on_background"
+        android:background="@drawable/pop_out_border"
         android:onClick="@{()-> clickListener.onClick(alarm)}"
         android:layout_margin="8dp">
 
@@ -27,7 +27,6 @@
             android:layout_margin="8dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:textColor="@color/white"
             app:alarmTimeString="@{alarm}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -39,7 +38,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="8dp"
-            android:textColor="@color/white"
             app:alarmRatingString="@{alarm}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/time"
@@ -51,7 +49,6 @@
             android:layout_width="107dp"
             android:layout_height="56dp"
             android:layout_marginEnd="8dp"
-            android:textColor="@color/white"
             app:alarmDaysString="@{alarm}"
             app:layout_constraintBottom_toBottomOf="@+id/rating"
             app:layout_constraintEnd_toStartOf="@+id/enable_alarm"
@@ -75,7 +72,8 @@
             android:layout_width="wrap_content"
             android:layout_height="49dp"
             android:layout_marginEnd="16dp"
-            android:backgroundTint="?attr/colorPrimaryVariant"
+            android:backgroundTint="?attr/colorSurface"
+            android:textColor="?attr/colorOnSurface"
             android:drawableLeft="@android:drawable/ic_menu_delete"
             android:onClick="@{() -> clickListener.onClickDelete(alarm)}"
             android:text="Delete"

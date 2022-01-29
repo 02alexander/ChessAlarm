@@ -4,7 +4,7 @@
 
     <!-- View background color -->
     <solid
-        android:color="?attr/colorPrimaryVariant" >
+        android:color="?attr/colorSurface" >
     </solid>
 
 

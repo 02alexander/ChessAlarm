@@ -3,22 +3,38 @@
     <style name="Theme.ChessAlarm2" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
 
         <!-- useful resource  https://material.io/develop/android/theming/color -->
+        <!-- https://material.io/design/color/the-color-system.html#color-theme-creation -->
 
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_500</item>
+        <item name="colorSecondaryVariant">@color/teal_900</item>
+        <item name="colorOnSecondary">@color/black</item>
+
+        <item name="borderColor">#ffc0c0c0</item>
+        <!--
         <item name="colorPrimary">#ff888888</item>
         <item name="colorPrimaryVariant">#ff202020</item>
         <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
         <item name="colorSecondary">#ff282828</item>
         <item name="colorSecondaryVariant">#ff333333</item>
         <item name="colorOnSecondary">@color/white</item>
 
         <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">#ff808080</item>
+        <item name="android:textColorHint">#ff808080</item>
 
-        <item name="android:colorBackground">@color/background</item>
-        <item name="colorOnBackground">@color/on_background</item>
-        <item name="colorSurface">@color/on_background</item>
+        <item name="android:colorBackground">@color/on_background</item>
+        <item name="colorOnBackground">@color/background</item>
+
+        <item name="colorSurface">#FF505050</item>
+        <item name="colorOnSurface">@color/on_on_background</item>
 
         <item name="colorAccent">#ffADD8E6</item>
+        -->
+
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->

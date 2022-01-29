@@ -2,6 +2,7 @@ package com.example.chessalarm2.chessproblemalarm
 
 import android.app.Activity
 import android.app.KeyguardManager
+import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -157,6 +158,8 @@ class ChessAlarmActivity : AppCompatActivity() {
         Log.d("on_move()", "You solved the puzzle!")
         viewModel.stopAlarmAudio()
         AlarmReceiver.mediaPlayer?.stop()
+        val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(AlarmReceiver.NOTIFICATION_ID)
         finish()
     }
 
