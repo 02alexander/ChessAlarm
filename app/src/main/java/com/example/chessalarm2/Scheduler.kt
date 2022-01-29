@@ -34,21 +34,23 @@ class Scheduler(val context: Context) {
                 set(Calendar.MINUTE, c.get(Calendar.MINUTE))
                 set(Calendar.DAY_OF_WEEK, day+2)
             }
-            if (calendar.timeInMillis < System.currentTimeMillis()) {
+            if (calendar.timeInMillis < System.currentTimeMillis()+3000) {
+
                 calendar.add(Calendar.DAY_OF_YEAR,7)
             }
             val alarmIntent = getAlarmIntent(alarm, day)
             Log.d("scheduler", "set alarm at "+Date(calendar.timeInMillis).toString())
             /*alarmManager.set(
                 AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime() + 10,
+                SystemClock.elapsedRealtime() + 1*1000,
                 alarmIntent
             )*/
-            alarmManager.setExact(
+            /*alarmManager.setExact(
                 AlarmManager.RTC_WAKEUP,
                 calendar.timeInMillis,
                 alarmIntent
-            )
+            )*/
+            alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(calendar.timeInMillis, alarmIntent), alarmIntent)
         }
     }
 

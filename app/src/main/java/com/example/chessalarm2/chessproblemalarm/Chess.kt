@@ -1,6 +1,7 @@
 package com.example.chessalarm2.chessproblemalarm
 
 import android.util.Log
+import kotlin.math.abs
 
 const val BOARD_SIZE = 8;
 
@@ -40,18 +41,63 @@ class Chess() {
         //parse_FEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 24")
     }
 
+    companion object {
+        fun isPromotion(src: Coordinate, dst: Coordinate): Boolean {
+            return dst.y < 0
+        }
+
+        fun intToEligiblePromotionPiece(d: Int): Piece {
+            return when(d) {
+                -1 -> Piece.ROOK
+                -2 -> Piece.QUEEN
+                -3 -> Piece.BISHOP
+                -4 -> Piece.KNIGHT
+                else -> Piece.QUEEN
+            }
+        }
+
+        fun eligiblePromotionPieceToInt(piece: Piece): Int {
+            return when(piece) {
+                Piece.ROOK -> -1
+                Piece.QUEEN -> -2
+                Piece.BISHOP -> -3
+                Piece.KNIGHT -> -4
+                else -> -2
+            }
+        }
+    }
+
+    fun play_move(src: Coordinate, dst: Coordinate) {
+        if (isPromotion(src, dst)) {
+            Log.d("chess", "played promotion move")
+            promote(src,dst)
+        } else if (isCastleMove(src, dst)) {
+            Log.d("chess", "played castle move")
+            if (dst.x > src.x) {
+                castle(get(src).second, true)
+            } else {
+                castle(get(src).second, true)
+            }
+            en_passant_target = null
+        } else if (isEnPassantMove(src, dst)) {
+            Log.d("chess", "played en passant")
+            enPassant(src, dst)
+        } else {
+            en_passant_target = getEnPassantTarget(src,dst)
+            move_piece(src, dst)
+        }
+        cur_player = oppositePlayer(cur_player)
+    }
+
     fun move_piece(src: Coordinate, dst: Coordinate) {
         this[dst] = this[src]
         this[src] = Pair(Piece.EMPTY, Player.BLACK)
-        cur_player = when(cur_player) {
-            Player.BLACK -> Player.WHITE
-            Player.WHITE -> Player.BLACK
-        }
     }
 
     fun legal_moves(cord: Coordinate): List<Coordinate> {
         val (piece, player) = this[cord]
-        return when(piece) {
+
+        val moves: MutableList<Coordinate> = when(piece) {
             Piece.KING -> legal_king_moves(cord, player)
             Piece.KNIGHT -> legal_knight_moves(cord, player)
             Piece.BISHOP -> legal_bishop_moves(cord, player)
@@ -59,7 +105,27 @@ class Chess() {
             Piece.PAWN -> legal_pawn_moves(cord, player)
             Piece.ROOK -> legal_rook_moves(cord, player)
             Piece.EMPTY -> listOf()
+        }.toMutableList()
+
+        if (canCastle(player, true) && get(cord).first == Piece.KING) {
+            Log.d("chess", "$player can castle short")
+            moves.add(when(player) {
+                Player.BLACK -> Coordinate(6, 0)
+                Player.WHITE -> Coordinate(6, 7)
+            })
         }
+        if (canCastle(player, false) && get(cord).first == Piece.KING) {
+            Log.d("chess", "$player can castle long")
+            moves.add(when(player) {
+                Player.BLACK -> Coordinate(2, 0)
+                Player.WHITE -> Coordinate(2, 7)
+            })
+        }
+        if (canEnPassant(cord)) {
+            Log.d("chess", "$cord can en passant to $en_passant_target")
+            moves.add(en_passant_target!!)
+        }
+        return moves
     }
 
     // the following functions doesn't take into account that a move might be be illegal because the piece is protecting the king.
@@ -81,6 +147,7 @@ class Chess() {
             }
             moves.add(cord+dir)
         }
+
         return moves
     }
 
@@ -248,6 +315,149 @@ class Chess() {
         return false
     }
 
+    fun canCastle(player: Player, isShort: Boolean): Boolean {
+        val c1 = if (isShort) {1} else {0}
+        val c2 = if (player==Player.WHITE) {0} else {1}
+        if (!castling_rights[c1+c2*2]) {
+            return false
+        }
+        val king_start_cord: Coordinate = when(player) {
+            Player.WHITE -> Coordinate(4,7)
+            Player.BLACK -> Coordinate(4,0)
+        }
+        val king_end_cord: Coordinate = when(player) {
+            Player.WHITE -> if (isShort) {Coordinate(6,7)} else {Coordinate(2,7)}
+            Player.BLACK -> if (isShort) {Coordinate(6,0)} else {Coordinate(2, 0)}
+        }
+        val rook_start_cord: Coordinate = when(player) {
+            Player.WHITE -> if (isShort) {Coordinate(7,7)} else {Coordinate(0,7)}
+            Player.BLACK -> if (isShort) {Coordinate(7,0)} else {Coordinate(0,0)}
+        }
+        var dx = (king_end_cord-king_start_cord).x
+        for (i in 0 until abs(dx)) {
+            val d = dx/abs(dx)
+            val cord = Coordinate(king_start_cord.x+i*d, king_start_cord.y)
+            if (is_piece_threatened(cord,player)) {
+                return false
+            }
+        }
+        dx = (rook_start_cord-king_start_cord).x
+        for (i in 1..(abs(dx)-1)) {
+            val d = dx/abs(dx)
+            val cord = Coordinate(king_start_cord.x+i*d, king_start_cord.y)
+            Log.d("chess", "castling: $cord checked for piece, d=$d, dx=$dx")
+            if (get(cord).first != Piece.EMPTY) {
+                Log.d("chess", "castling: $cord is not empty")
+                return false
+            }
+        }
+        return true
+    }
+
+    fun isCastleMove(src: Coordinate, dst: Coordinate): Boolean {
+        val player = get(src).second
+        if (player == Player.WHITE && dst.x < src.x && !castling_rights[0]) {
+            return false
+        }
+        if (player == Player.WHITE && dst.x > src.x && !castling_rights[1]) {
+            return false
+        }
+        if (player == Player.BLACK && dst.x < src.x && !castling_rights[2]) {
+            return false
+        }
+        if (player == Player.BLACK && dst.x > src.x && !castling_rights[3]) {
+            return false
+        }
+        if (get(src).first == Piece.KING) {
+            val sqrs: List<Coordinate> = when(player) {
+                Player.WHITE -> listOf(Coordinate(6,7), Coordinate(2,7))
+                Player.BLACK -> listOf(Coordinate(6,0), Coordinate(2, 0))
+            }
+            for (s in sqrs) {
+                if (s == dst) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    fun castle(player: Player, isShort: Boolean) {
+        val king_start_cord: Coordinate = when(player) {
+            Player.WHITE -> Coordinate(4,7)
+            Player.BLACK -> Coordinate(4,0)
+        }
+        val king_end_cord: Coordinate = when(player) {
+            Player.WHITE -> if (isShort) {Coordinate(6,7)} else {Coordinate(2,7)}
+            Player.BLACK -> if (isShort) {Coordinate(6,0)} else {Coordinate(2, 0)}
+        }
+        val rook_start_cord: Coordinate = when(player) {
+            Player.WHITE -> if (isShort) {Coordinate(7,7)} else {Coordinate(0,7)}
+            Player.BLACK -> if (isShort) {Coordinate(7,0)} else {Coordinate(0,0)}
+        }
+        val rook_end_cord: Coordinate = when(player) {
+            Player.WHITE -> if (isShort) {Coordinate(5,7)} else {Coordinate(3,7)}
+            Player.BLACK -> if (isShort) {Coordinate(5,0)} else {Coordinate(3, 0)}
+        }
+        move_piece(king_start_cord, king_end_cord)
+        move_piece(rook_start_cord, rook_end_cord)
+    }
+
+    fun isEnPassantMove(src: Coordinate, dst: Coordinate): Boolean {
+        return get(src).first == Piece.PAWN && get(dst).first == Piece.EMPTY && abs(src.x-dst.x) >= 1
+    }
+
+    fun enPassant(src: Coordinate, dst: Coordinate) {
+        val player = get(src).second
+        val victim_cord: Coordinate = when(player) {
+            Player.WHITE -> Coordinate(dst.x, dst.y+1)
+            Player.BLACK -> Coordinate(dst.x, dst.y-1)
+        }
+        move_piece(src, dst)
+        board[victim_cord.x][victim_cord.y] = Pair(Piece.EMPTY, Player.BLACK)
+    }
+
+    // get the en passant target if the move results in an en passant target
+    fun getEnPassantTarget(src: Coordinate, dst: Coordinate): Coordinate? {
+        val piece = get(src).first
+        val player = get(src).second
+        if (piece != Piece.PAWN || abs(src.y-dst.y) != 2) {
+            return null
+        }
+        return when (player) {
+            Player.BLACK -> Coordinate(dst.x, dst.y-1)
+            Player.WHITE -> Coordinate(dst.x, dst.y+1)
+        }
+    }
+
+    fun canEnPassant(cord: Coordinate): Boolean {
+        val player = get(cord).second
+        val piece = get(cord).first
+        if (piece != Piece.PAWN || en_passant_target == null) {
+            return false
+        }
+        return when(player) {
+            Player.BLACK -> Coordinate(cord.x+1,cord.y+1) == en_passant_target || Coordinate(cord.x-1,cord.y+1) == en_passant_target
+            Player.WHITE -> Coordinate(cord.x+1,cord.y-1) == en_passant_target || Coordinate(cord.x-1,cord.y-1) == en_passant_target
+        }
+    }
+
+    fun promote(src: Coordinate, dst: Coordinate) {
+        val to_piece: Piece = intToEligiblePromotionPiece(dst.y)
+        val player = get(src).second
+        val y = when (player) {
+            Player.BLACK -> 7
+            Player.WHITE -> 0
+        }
+        move_piece(src, Coordinate(dst.x, y))
+        board[dst.x][y] = Pair(to_piece, get(Coordinate(dst.x, y)).second)
+    }
+
+    fun resultsInPromotion(src: Coordinate, dst: Coordinate): Boolean {
+        val (piece, player) = get(src)
+        return (dst.y == 0 || dst.y == 7) && piece == Piece.PAWN
+    }
+
     fun copy(): Chess {
         val cpy = Chess()
         cpy.board = mutableListOf()
@@ -262,6 +472,13 @@ class Chess() {
         cpy.halfmove_counter = halfmove_counter
         cpy.fullmove_counter = fullmove_counter
         return cpy
+    }
+
+    private fun oppositePlayer(player: Player): Player {
+        return when (player) {
+            Player.BLACK -> Player.WHITE
+            Player.WHITE -> Player.BLACK
+        }
     }
 
     fun is_cord_in_board(cord: Coordinate): Boolean {

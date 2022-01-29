@@ -48,6 +48,8 @@ class AlarmReceiver : BroadcastReceiver() {
             playAudioFromId(context, mediaPlayer!!, alarm.audioId)
 
             val scheduler = Scheduler(context)
+
+            // TODO: fix bug where it creates an endless cycle when uncommenting these lines.
             scheduler.disableAlarm(alarm)
             scheduler.enableAlarm(alarm)
         }

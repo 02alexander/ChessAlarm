@@ -13,4 +13,5 @@
     <color name="legal_move_dot">#88202020</color>
     <color name="background">#ff333333</color>
     <color name="on_background">#ff282828</color>
+    <color name="promote_background">#ff282838</color>
 </resources>

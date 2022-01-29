@@ -25,6 +25,10 @@ class ChessView @JvmOverloads constructor(
 
     private var legal_moves: List<Coordinate>? = null
 
+    private var prompt_promotion: Pair<Coordinate, Coordinate>? = null
+
+    private var promotion_squares: List<Coordinate>? = null
+
     private var animationValue: Float? = null
     private var moveAnimationQueue: Queue<Triple<Coordinate, Coordinate, Pair<Piece, Player>>> = LinkedList()
 
@@ -43,13 +47,38 @@ class ChessView @JvmOverloads constructor(
             val (piece, player) = board[cord]
             //Log.d("sdfgsdf", "cord="+cord.toString())
 
-            // removes focus of piece if user clicks on empty square
+            prompt_promotion?.let {
+                val promotion_piece = getPromotionPiece(cord)
+                promotion_piece?.let {
+                    val (old_src, old_dst) = prompt_promotion!!
+                    val (src, dst) = promotionMoveToMove(old_src, old_dst, it)
+                    onChessMoveListener(src, dst)
+                    prompt_promotion = null
+                    promotion_squares = null
+                }
+                if (promotion_piece == null) {
+                    promotion_squares = null
+                    prompt_promotion = null
+                    currently_selected = null
+                    legal_moves = null
+                }
+            }
+
             legal_moves?.let {
+                // removes focus of piece if user clicks on empty square
                 if (!(cord in it)) {
+                    promotion_squares = null
+                    prompt_promotion = null
                     currently_selected = null
                     legal_moves = null
                 } else if (board.cur_player == board[currently_selected!!].second) {
-                    onChessMoveListener(currently_selected!!, cord)
+                    // on valid move clicked.
+
+                    if (board.resultsInPromotion(currently_selected!!, cord)) {
+                        prompt_promotion = Pair(currently_selected!!, cord)
+                    } else {
+                        onChessMoveListener(currently_selected!!, cord)
+                    }
                     currently_selected = null
                     legal_moves = null
                 }
@@ -65,6 +94,10 @@ class ChessView @JvmOverloads constructor(
         return super.onTouchEvent(event)
     }
 
+    private fun promotionMoveToMove(src: Coordinate, dst: Coordinate, piece: Piece): Pair<Coordinate, Coordinate> {
+        return Pair(src, Coordinate(dst.x, Chess.eligiblePromotionPieceToInt(piece)))
+    }
+
     fun setOnChessMoveListener(f: (src: Coordinate, dst: Coordinate) -> Unit) {
         this.onChessMoveListener = f
     }
@@ -78,10 +111,12 @@ class ChessView @JvmOverloads constructor(
         invalidate()
     }
 
-    fun move_piece(src: Coordinate, dst: Coordinate) {
-        Log.d("piece_animation", "piece moved")
-        board.move_piece(src, dst)
-        moveAnimationQueue.add(Triple(src, dst, board[dst.x][dst.y]))
+    fun play_move(src: Coordinate, dst: Coordinate) {
+        board.play_move(src, dst)
+        Log.d("piece_animation", "played move ($src, $dst)")
+        if (!Chess.isPromotion(src, dst)) {
+            moveAnimationQueue.add(Triple(src, dst, board[dst.x][dst.y]))
+        }
         playNextAnimation()
     }
 
@@ -141,6 +176,25 @@ class ChessView @JvmOverloads constructor(
         val posx = srcxy.first+animationValue!!*(dstxy.first-srcxy.first)
         val posy = srcxy.second+animationValue!!*(dstxy.second-srcxy.second)
         return Pair(posx, posy)
+    }
+
+    // given that the prompt for promotion is open it
+    // returns what piece was clicked if the user clicked on cord.
+    private fun getPromotionPiece(cord: Coordinate): Piece? {
+        promotion_squares?.let {
+            Log.d("chess", "promotion squares = $it")
+            for (square in it) {
+                if (cord.equals(square)) {
+                    val y = if (cord.y <= 3) {
+                        cord.y
+                    } else {
+                        7-cord.y
+                    }
+                    return Chess.intToEligiblePromotionPiece(-y-1)
+                }
+            }
+        }
+        return null
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -210,17 +264,6 @@ class ChessView @JvmOverloads constructor(
             val (piece, player) = moveAnimationQueue.peek().third
             val mtopleft = movingPiecexy(src, dst)
             val mbotright = movingPiecexy(src+ Coordinate(1,1), dst+Coordinate(1,1))
-            /*val piece: Piece
-            val player: Player
-            if (board[dst.x][dst.y].first != Piece.EMPTY) {
-                val tpl = board[dst.x][dst.y]
-                piece = tpl.first
-                player = tpl.second
-            } else {
-                val tpl =  board[src.x][src.y]
-                piece = tpl.first
-                player = tpl.second
-            }*/
             val drawable = ResourcesCompat.getDrawable(resources, pieceToDrawable(piece, player), null)!!
             drawable.setBounds(mtopleft.first.toInt(), mtopleft.second.toInt(), mbotright.first.toInt(), mbotright.second.toInt())
             drawable.draw(canvas)
@@ -233,6 +276,28 @@ class ChessView @JvmOverloads constructor(
                 paint.color = context.getColor(R.color.legal_move_dot)
                 canvas.drawCircle((left+stepSize*(x+0.5)).toFloat(), (top+stepSize*(y+0.5)).toFloat(), stepSize*0.15f,paint)
             }
+        }
+
+        prompt_promotion?.let { pair ->
+            val (src, cord) = pair
+            val player = board[src].second
+            val d = if (cord.y == 0) { 1 } else { -1 }
+            val psquares = mutableListOf<Coordinate>()
+            for (i in 0..3) {
+                psquares.add(cord+ Coordinate(0,i*d))
+                val topleft = boardCordToxy(cord+ Coordinate(0, i*d))
+                val botright = boardCordToxy(cord+Coordinate(1,i*d+1))
+                val piece = Chess.intToEligiblePromotionPiece(-i-1)
+                val drawable = ResourcesCompat.getDrawable(resources, pieceToDrawable(piece, player), null)!!
+
+                paint.color = context.getColor(R.color.promote_background)
+                canvas.drawRect(topleft.first, topleft.second, botright.first, botright.second, paint)
+
+                drawable.setBounds(topleft.first.toInt(), topleft.second.toInt(), botright.first.toInt(), botright.second.toInt())
+                drawable.draw(canvas)
+
+            }
+            promotion_squares = psquares
         }
     }
 }

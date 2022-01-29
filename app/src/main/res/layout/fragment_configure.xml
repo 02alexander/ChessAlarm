@@ -6,6 +6,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/background"
         android:orientation="vertical">
 
         <TextView
@@ -16,6 +17,7 @@
             android:layout_marginTop="16dp"
             android:background="@drawable/edit_text_border"
             android:padding="3dp"
+            android:textColor="@color/white"
             android:hint="time"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -29,6 +31,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:padding="3dp"
+            android:textColor="@color/white"
             android:hint="days"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="@+id/editTime"
@@ -39,11 +42,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <com.google.android.material.textfield.TextInputEditText
+                android:background="@color/on_background"
                 android:id="@+id/editRating"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
+                android:textColor="@color/white"
                 android:ems="10"
                 android:inputType="number"
                 android:hint="Rating (700-3000)"
@@ -54,6 +59,7 @@
 
         <Spinner
             android:id="@+id/spinnerAudio"
+            android:background="@color/on_background"
             android:layout_width="202dp"
             android:layout_height="48dp"
             android:layout_marginStart="16dp"

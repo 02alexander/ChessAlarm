@@ -5,9 +5,12 @@ import android.database.Cursor
 import android.media.MediaPlayer
 import android.net.Uri
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.chessalarm2.chessproblemalarm.Chess
 import com.example.chessalarm2.chessproblemalarm.Coordinate
+import com.example.chessalarm2.chessproblemalarm.Piece
 
 class TextItemViewHolder(val textView: TextView): RecyclerView.ViewHolder(textView)
 
@@ -31,16 +34,25 @@ fun daysToString(days: List<Int>) : String {
     return res
 }
 
-//fun fetch_puzzle(rating)
-
 fun parse_UCI(UCI: String): List<Pair<Coordinate, Coordinate>> {
     val moves_string = UCI.split(" ")
     val moves = mutableListOf<Pair<Coordinate, Coordinate>>()
     for (move_string in moves_string) {
         val src = Coordinate(move_string.slice(0..1))
         val dst = Coordinate(move_string.slice(2..3))
+        if (move_string.length == 5) {
+            val piece = when(move_string[4]) {
+                'q' -> Piece.QUEEN
+                'n' -> Piece.KNIGHT
+                'r' -> Piece.ROOK
+                'b' -> Piece.BISHOP
+                else -> Piece.QUEEN
+            }
+            dst.y = Chess.eligiblePromotionPieceToInt(piece)
+        }
         moves.add(Pair(src,dst))
     }
+    Log.d("parse_UCI", "moves=$moves")
     return moves
 }
 
@@ -73,6 +85,7 @@ fun playAudioFromId(context: Context, mediaPlayer: MediaPlayer, id: Long) {
     } else {
         new_id = id
     }
+    Log.d("playAudioFromId", "new_id = $new_id, id= $id")
     val path = getAudioPath(context, new_id)
     val uri = Uri.parse("file:///"+path)
     //mediaPlayer.reset()

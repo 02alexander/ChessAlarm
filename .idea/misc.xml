@@ -7,6 +7,7 @@
         <entry key="app/src/main/res/layout/activity_chess_alarm.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.19427083333333334" />
         <entry key="app/src/main/res/layout/activity_select_days.xml" value="0.35052083333333334" />
+        <entry key="app/src/main/res/layout/debug_chessview_layout.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/fragment_alarms.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/fragment_configure.xml" value="0.30337078651685395" />
         <entry key="app/src/main/res/layout/list_item_alarm.xml" value="0.5" />

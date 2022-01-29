@@ -1,7 +1,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Theme.ChessAlarm2" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Primary brand color. -->
+        <!-- useful resource  https://material.io/develop/android/theming/color -->
+
         <item name="colorPrimary">#ff888888</item>
         <item name="colorPrimaryVariant">#ff202020</item>
         <item name="colorOnPrimary">@color/white</item>
@@ -9,6 +10,12 @@
         <item name="colorSecondary">#ff282828</item>
         <item name="colorSecondaryVariant">#ff333333</item>
         <item name="colorOnSecondary">@color/white</item>
+
+        <item name="android:textColorPrimary">@color/white</item>
+
+        <item name="android:colorBackground">@color/background</item>
+        <item name="colorOnBackground">@color/on_background</item>
+        <item name="colorSurface">@color/on_background</item>
 
         <item name="colorAccent">#ffADD8E6</item>
         <!-- Status bar color. -->

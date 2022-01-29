@@ -24,6 +24,8 @@ import kotlinx.coroutines.launch
 
 class ChessAlarmActivity : AppCompatActivity() {
 
+    // TODO: disable castling rights after moving king or rook
+
     private lateinit var binding: ActivityChessAlarmBinding
     //private var solution: List<Pair<Coordinate, Coordinate>> = parse_UCI("d3d6 f8d8 d6d8 f6d8")
     private var solution: List<Pair<Coordinate, Coordinate>>? = null
@@ -55,6 +57,7 @@ class ChessAlarmActivity : AppCompatActivity() {
 
         stopAlarmInNMinutes(60)
 
+        //binding.chessView.loadFEN("rnbqkbnr/pppp1ppp/8/8/4P3/4K3/PPPP2pP/RNBQ1BNR b kq - 1 5")
         //binding.chessView.loadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 
         // called once alarm has been fetched from the database.
@@ -63,16 +66,16 @@ class ChessAlarmActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 val puzzles = puzzleDatabase.getEligiblePuzzles(it!!.rating)
                 val puzzle = puzzles[0]
+                //val puzzle = puzzleDatabase.get(13003469153L)!!
                 Log.d("chess_alarm", "puzzle=${puzzle.toString()}")
                 Log.d("chess_alarm", "moves=${puzzle.moves}")
                 solution = parse_UCI(puzzle.moves)
                 binding.chessView.loadFEN(puzzle.FEN)
-                binding.chessView.move_piece(solution!![0].first, solution!![0].second)
+                binding.chessView.play_move(solution!![0].first, solution!![0].second)
+                Log.d("chess_alarm", "board=${binding.chessView.board.board}")
                 solution = solution!!.slice(1 until solution!!.size)
 
                 updatePlayerToMove()
-
-                Log.d("chess_alarm", "board=${binding.chessView.board.board}")
                 puzzle.beenPlayed = true
                 puzzleDatabase.update(puzzle)
             }
@@ -105,7 +108,7 @@ class ChessAlarmActivity : AppCompatActivity() {
 
     // used for debugging Chess
     fun temp_on_move(src: Coordinate, dst: Coordinate) {
-        binding.chessView.move_piece(src, dst)
+        binding.chessView.play_move(src, dst)
         if (binding.chessView.board.is_in_check(Player.BLACK)) {
             Log.d("chess", "black king checked")
         } else if (binding.chessView.board.is_in_check(Player.WHITE)) {
@@ -124,26 +127,27 @@ class ChessAlarmActivity : AppCompatActivity() {
         solution?.let {
 
             val cpy = binding.chessView.board.copy()
-            cpy.move_piece(src, dst)
+            cpy.play_move(src, dst)
             if (cpy.is_in_checkmate(cpy.cur_player)) {
                 on_solved()
                 return
             }
-
+            Log.d("on_move()", "played ($src, $dst), correct (${it[0]})")
             if (it[0].first != src || it[0].second != dst) {
                 Log.d(
                     "on_move()",
-                    "wrong move, correct move is " + it[0].first.toString() + ", " + it[1].second.toString()
+                    "wrong move, correct move is " + it[0].first.toString() + ", " + it[0].second.toString()
                 )
                 binding.chessView.indicateWrongMove(src, dst)
             } else {
-                binding.chessView.move_piece(src, dst)
+                binding.chessView.play_move(src, dst)
                 if (it.size <= 1) { // checks if this was the last move in the solutions
                     on_solved()
                     return
                 }
+                Log.d("chess", "opponent plays ${it[1]}")
                 // plays opponents move and then removes the moves played from solution
-                binding.chessView.move_piece(it[1].first, it[1].second)
+                binding.chessView.play_move(it[1].first, it[1].second)
                 solution = it.slice(2 until it.size)
             }
         }
