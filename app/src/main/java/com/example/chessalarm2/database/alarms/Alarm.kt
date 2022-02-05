@@ -23,4 +23,7 @@ data class Alarm (
 
     @ColumnInfo
     var audioId: Long = -1,
+
+    @ColumnInfo
+    var cooldown: Int = 0,
 )

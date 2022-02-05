@@ -6,6 +6,8 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
+import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
@@ -34,6 +36,8 @@ class ChessView @JvmOverloads constructor(
 
     private var onChessMoveListener: (src: Coordinate, dst: Coordinate) -> Unit = ::on_move
 
+    private var isInCooldown: Boolean = false
+
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
     }
@@ -43,6 +47,11 @@ class ChessView @JvmOverloads constructor(
         val y = event.y
         val action = event.action
         val cord = xyToBoardCord(x, y)
+
+        if (isInCooldown) {
+            return super.onTouchEvent(event)
+        }
+
         if (action == MotionEvent.ACTION_DOWN && board.is_cord_in_board(cord)) {
             val (piece, player) = board[cord]
             //Log.d("sdfgsdf", "cord="+cord.toString())
@@ -137,6 +146,15 @@ class ChessView @JvmOverloads constructor(
             invalidate()
         }
         moveValueAnimator.start()
+    }
+
+    fun coolDownBoard(seconds: Int) {
+        isInCooldown = true
+        invalidate()
+        Handler(Looper.getMainLooper()).postDelayed({
+            isInCooldown = false
+            invalidate()
+        }, 1000*seconds.toLong())
     }
 
     fun indicateWrongMove(src: Coordinate, dst: Coordinate) {
@@ -258,6 +276,8 @@ class ChessView @JvmOverloads constructor(
                 }
             }
         }
+
+        // draws animation
         if (moveAnimationQueue.size >= 1) {
             val src = moveAnimationQueue.peek().first
             val dst = moveAnimationQueue.peek().second
@@ -269,6 +289,7 @@ class ChessView @JvmOverloads constructor(
             drawable.draw(canvas)
         }
 
+        // draws circles on legal moves.
         legal_moves?.let {
             for (move in it) {
                 val x = move.x
@@ -278,6 +299,7 @@ class ChessView @JvmOverloads constructor(
             }
         }
 
+        // draws prompt for promotion
         prompt_promotion?.let { pair ->
             val (src, cord) = pair
             val player = board[src].second
@@ -299,6 +321,13 @@ class ChessView @JvmOverloads constructor(
             }
             promotion_squares = psquares
         }
+
+        if (isInCooldown) {
+            paint.color = context.getColor(R.color.cooldown)
+            canvas.drawRect(0.0f,0.0f,height.toFloat(),width.toFloat(), paint)
+        }
+
+
     }
 }
 

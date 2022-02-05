@@ -125,7 +125,15 @@ class Chess() {
             Log.d("chess", "$cord can en passant to $en_passant_target")
             moves.add(en_passant_target!!)
         }
-        return moves
+        val not_in_check_moves = mutableListOf<Coordinate>()
+        for (move in moves) {
+            val tb = copy()
+            tb.play_move(cord, move)
+            if (!tb.is_in_check(player)) {
+                not_in_check_moves.add(move)
+            }
+        }
+        return not_in_check_moves
     }
 
     // the following functions doesn't take into account that a move might be be illegal because the piece is protecting the king.

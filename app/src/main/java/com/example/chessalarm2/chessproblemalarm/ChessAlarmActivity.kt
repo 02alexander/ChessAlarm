@@ -140,6 +140,7 @@ class ChessAlarmActivity : AppCompatActivity() {
                     "wrong move, correct move is " + it[0].first.toString() + ", " + it[0].second.toString()
                 )
                 binding.chessView.indicateWrongMove(src, dst)
+                binding.chessView.coolDownBoard(viewModel.alarm.value!!.cooldown)
             } else {
                 binding.chessView.play_move(src, dst)
                 if (it.size <= 1) { // checks if this was the last move in the solutions

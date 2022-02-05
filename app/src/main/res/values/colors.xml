@@ -17,5 +17,6 @@
     <color name="on_background">#ff282828</color>
     <color name="on_on_background">#ff202020</color>
     <color name="promote_background">#ff282838</color>
+    <color name="cooldown">#60606060</color>
     <color name="gray">#ffc0c0c0</color>
 </resources>

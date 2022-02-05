@@ -90,6 +90,17 @@ class ConfigureFragment : Fragment() {
                 //toast.show()
             }
         }
+        binding.editCooldown.doOnTextChanged { text, start, before, count ->
+            Log.d("configure_fragment", "cooldown edited, text=$text, start=$start, before=$before, count=$count")
+            try {
+                val cooldown = text.toString().toInt()
+                configureViewModel.alarm.value = configureViewModel.alarm.value?.copy(cooldown = cooldown)
+                Log.d("configure_fragment", "new alarm = ${configureViewModel.alarm.value}")
+            } catch (e: NumberFormatException) {
+                //val toast = Toast.makeText(application.applicationContext, "Invalid rating input. Must be an integer.", Toast.LENGTH_SHORT)
+                //toast.show()
+            }
+        }
 
         populateAudioSpinner()
         return binding.root
@@ -138,6 +149,9 @@ class ConfigureFragment : Fragment() {
         }
         if (binding.editDays.text != daysToString(alarm.days)) {
             binding.editDays.text = fromHtml("<b>Days: </b>" +daysToString(alarm.days), 0)
+        }
+        if (binding.editCooldown.text.toString() != alarm.cooldown.toString()) {
+            binding.editCooldown.setText(alarm.cooldown.toString())
         }
         for (i in sounds.indices) {
             if (alarm.audioId == sounds[i].id) {
