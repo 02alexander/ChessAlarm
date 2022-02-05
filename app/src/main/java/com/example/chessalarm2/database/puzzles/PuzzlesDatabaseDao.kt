@@ -19,6 +19,9 @@ interface PuzzlesDatabaseDao {
     @Query("SELECT * FROM puzzles_table WHERE rating < :rating AND NOT beenPlayed ORDER BY rating DESC LIMIT 3")
     suspend fun getEligiblePuzzles(rating: Int): List<Puzzle>
 
+    @Query("UPDATE puzzles_table SET beenPlayed=0")
+    suspend fun resetBeenPlayed()
+
     @Query("SELECT COUNT(*) FROM puzzles_table")
     suspend fun count(): Long
 }

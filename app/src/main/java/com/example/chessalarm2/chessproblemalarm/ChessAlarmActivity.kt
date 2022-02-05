@@ -65,7 +65,12 @@ class ChessAlarmActivity : AppCompatActivity() {
         viewModel.alarm.observe(this, {
 
             lifecycleScope.launch {
-                val puzzles = puzzleDatabase.getEligiblePuzzles(it!!.rating)
+                var puzzles = puzzleDatabase.getEligiblePuzzles(it!!.rating)
+                if (puzzles.size == 0) {
+                    Log.d("chess_alarm", "resetBeenPlayed")
+                    puzzleDatabase.resetBeenPlayed()
+                    puzzles = puzzleDatabase.getEligiblePuzzles(it!!.rating)
+                }
                 val puzzle = puzzles[0]
                 //val puzzle = puzzleDatabase.get(13003469153L)!!
                 Log.d("chess_alarm", "puzzle=${puzzle.toString()}")
