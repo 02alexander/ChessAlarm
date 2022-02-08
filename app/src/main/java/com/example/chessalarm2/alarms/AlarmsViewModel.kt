@@ -1,7 +1,6 @@
 package com.example.chessalarm2.alarms
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -34,7 +33,6 @@ class AlarmsViewModel(
 
     fun onAddAlarm() {
         viewModelScope.launch {
-            Log.d("AddAlarm", "onAddAlarm() called")
             val alarm = Alarm()
             database.insert(alarm)
         }
@@ -42,7 +40,6 @@ class AlarmsViewModel(
 
     fun onDeleteAlarm(alarmId: Long) {
         viewModelScope.launch {
-            Log.d("delete_alarm", "deleted alarm with id=$alarmId")
             val alarm = database.get(alarmId)!!
             if (alarm.isEnabled) {
                 val scheduler = Scheduler(getApplication())

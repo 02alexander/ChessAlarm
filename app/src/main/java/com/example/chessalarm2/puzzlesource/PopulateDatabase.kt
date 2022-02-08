@@ -1,7 +1,6 @@
 package com.example.chessalarm2.puzzlesource
 
 import android.app.Application
-import android.util.Log
 import com.example.chessalarm2.database.puzzles.Puzzle
 import com.example.chessalarm2.database.puzzles.PuzzlesDatabase
 import com.opencsv.CSVReaderBuilder
@@ -30,7 +29,6 @@ class PopulateDatabase{
             val applicationScope = CoroutineScope(SupervisorJob()+Dispatchers.Main)
             applicationScope.launch {
                 val count = database.count()
-                Log.d("puzzle_count", "count=$count")
 
                 val file = application.assets.open("lichess_db_puzzle.csv").reader()
                 val reader = CSVReaderBuilder(file).withSkipLines(count.toInt()).build()
@@ -59,7 +57,6 @@ class PopulateDatabase{
                     database.insert(puzzle)
                 }
                 val new_count = database.count()
-                Log.d("populateDatabase", "added ${new_count-count} puzzles to database")
             }
         }
     }

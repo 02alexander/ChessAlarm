@@ -43,7 +43,6 @@ class AlarmsFragment : Fragment() {
             alarmsViewModel.onDeleteAlarm(alarmId)
         }, { alarmId, isChecked ->
             lifecycleScope.launch {
-                Log.d("AlarmFragment", "isEnabled toggled")
                 val alarm = database.get(alarmId)!!
                 val isChanged = (alarm.isEnabled xor isChecked)
                 alarm.isEnabled = isChecked

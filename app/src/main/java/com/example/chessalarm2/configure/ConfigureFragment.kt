@@ -2,7 +2,6 @@ package com.example.chessalarm2.configure
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,7 +36,6 @@ class ConfigureFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        Log.d("configure_fragment", "onPause() called")
         configureViewModel.alarm.value?.let {
             if (it.rating < 700) {
                 it.rating = 700
@@ -67,7 +65,6 @@ class ConfigureFragment : Fragment() {
 
         configureViewModel.alarm.observe(this.viewLifecycleOwner, {
             it?.let {
-                Log.d("onCreateView()", "configureViewModel changed")
                 updateView(it)
             }
         })
@@ -80,22 +77,18 @@ class ConfigureFragment : Fragment() {
             showDaysDialog()
         }
         binding.editRating.doOnTextChanged { text, start, before, count ->
-            Log.d("configure_fragment", "rating edited, text=$text, start=$start, before=$before, count=$count")
             try {
                 var rating = text.toString().toInt()
                 configureViewModel.alarm.value = configureViewModel.alarm.value?.copy(rating = rating)
-                Log.d("configure_fragment", "new alarm = ${configureViewModel.alarm.value}")
             } catch (e: NumberFormatException) {
                 //val toast = Toast.makeText(application.applicationContext, "Invalid rating input. Must be an integer.", Toast.LENGTH_SHORT)
                 //toast.show()
             }
         }
         binding.editCooldown.doOnTextChanged { text, start, before, count ->
-            Log.d("configure_fragment", "cooldown edited, text=$text, start=$start, before=$before, count=$count")
             try {
                 val cooldown = text.toString().toInt()
                 configureViewModel.alarm.value = configureViewModel.alarm.value?.copy(cooldown = cooldown)
-                Log.d("configure_fragment", "new alarm = ${configureViewModel.alarm.value}")
             } catch (e: NumberFormatException) {
                 //val toast = Toast.makeText(application.applicationContext, "Invalid rating input. Must be an integer.", Toast.LENGTH_SHORT)
                 //toast.show()
@@ -140,7 +133,6 @@ class ConfigureFragment : Fragment() {
     fun updateView(alarm: Alarm) {
         val date = Date(alarm.time)
         val format = SimpleDateFormat("HH:mm")
-        Log.d("ConfigureFragment updateView", "alarm.time=${alarm.time} text=${format.format(date)}")
         if (binding.editTime.text != format.format(date).toString()) {
             binding.editTime.text = fromHtml("<b>Time: </b>" + format.format(date).toString(), 0)
         }

@@ -9,7 +9,6 @@ import android.graphics.Typeface
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.animation.doOnEnd
@@ -54,7 +53,6 @@ class ChessView @JvmOverloads constructor(
 
         if (action == MotionEvent.ACTION_DOWN && board.is_cord_in_board(cord)) {
             val (piece, player) = board[cord]
-            //Log.d("sdfgsdf", "cord="+cord.toString())
 
             prompt_promotion?.let {
                 val promotion_piece = getPromotionPiece(cord)
@@ -122,7 +120,6 @@ class ChessView @JvmOverloads constructor(
 
     fun play_move(src: Coordinate, dst: Coordinate) {
         board.play_move(src, dst)
-        Log.d("piece_animation", "played move ($src, $dst)")
         if (!Chess.isPromotion(src, dst)) {
             moveAnimationQueue.add(Triple(src, dst, board[dst.x][dst.y]))
         }
@@ -136,7 +133,6 @@ class ChessView @JvmOverloads constructor(
         val moveValueAnimator = ValueAnimator.ofFloat(0.0f, 1.0f)
         moveValueAnimator.duration = 200
         moveValueAnimator.doOnEnd {
-            Log.d("piece_animation", "end")
             moveAnimationQueue.poll()
             animationValue = null
             playNextAnimation()
@@ -200,7 +196,6 @@ class ChessView @JvmOverloads constructor(
     // returns what piece was clicked if the user clicked on cord.
     private fun getPromotionPiece(cord: Coordinate): Piece? {
         promotion_squares?.let {
-            Log.d("chess", "promotion squares = $it")
             for (square in it) {
                 if (cord.equals(square)) {
                     val y = if (cord.y <= 3) {
@@ -235,7 +230,6 @@ class ChessView @JvmOverloads constructor(
         canvas.drawRect(0.0f, 0.0f, width.toFloat(), height.toFloat(), paint)
         //canvas.drawLine(left.toFloat(), top.toFloat(), left.toFloat(), bottom.toFloat(), paint)
         val stepSize = (right-left) / BOARD_SIZE
-        //Log.d("onDraw", "stepSize="+stepSize.toString()+", "+"top="+top.toString()+", bottom="+bottom.toString())
         /*for (i in 0..BOARD_SIZE) {
             canvas.drawLine(left.toFloat(), (top-stepSize*i).toFloat(), right.toFloat(), (top-stepSize*i).toFloat(), paint)
             canvas.drawLine((left+stepSize*i).toFloat(), top.toFloat(), (left+stepSize*i).toFloat(), bottom.toFloat(), paint)
@@ -258,7 +252,6 @@ class ChessView @JvmOverloads constructor(
                     paint.color = context.getColor(R.color.square_selected)
                     //canvas.drawRect((left+stepSize*x).toFloat(), (top+stepSize*y).toFloat(), (left+stepSize*(x+1)).toFloat(), (top+stepSize*(y+1)).toFloat(), paint)
                     canvas.drawRect(topleft.first, topleft.second, botright.first, botright.second, paint)
-                    Log.d("onDraw", "currently_selected = "+currently_selected.toString())
                 }
                 if (moveAnimationQueue.size >= 1) {
                     val src = moveAnimationQueue.peek().first

@@ -1,7 +1,6 @@
 package com.example.chessalarm2.chessproblemalarm
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -14,13 +13,11 @@ class ChessAlarmViewModel(private val databaseDao: AlarmsDatabaseDao, private va
     val alarm: MutableLiveData<Alarm> = MutableLiveData()
 
     init {
-        Log.d("chess_alarm", "ChessAlarmViewModel created")
         fetchAlarm()
     }
 
     override fun onCleared() {
         super.onCleared()
-        Log.d("chess_alarm", "ChessAlarmViewModel cleared")
     }
 
     fun fetchAlarm() {

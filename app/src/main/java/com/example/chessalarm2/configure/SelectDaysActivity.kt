@@ -1,14 +1,10 @@
 package com.example.chessalarm2.configure
 
 import android.app.Activity
-import android.app.Application
 import android.content.Intent
 import android.os.Bundle
-import android.util.DisplayMetrics
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.example.chessalarm2.R
 import com.example.chessalarm2.databinding.ActivitySelectDaysBinding
@@ -30,7 +26,6 @@ class SelectDaysActivity : AppCompatActivity() {
 
         intent.extras.let {
             it?.getString("days")?.let {
-                Log.d("SelectDaysActivity", "val from alarmId = " + it)
                 days.value = Gson().fromJson<List<Int>>(it, object : TypeToken<List<Int>>() {}.type)
             }
         }
@@ -63,12 +58,10 @@ class SelectDaysActivity : AppCompatActivity() {
                 val intent = Intent()
                 intent.putExtra("days", json)
                 setResult(Activity.RESULT_OK, intent)
-                Log.d("SelectDaysActivity", "data returned " + json)
 
             }
         })
 
-        Log.d("SelectDaysActivity", "created")
     }
 
     private fun updateDays(day: Int, should_exist: Boolean) {
@@ -84,12 +77,10 @@ class SelectDaysActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        Log.d("SelectDaysActivity", "stopped")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d("SelectDaysActivity", "destroyed")
 
     }
 

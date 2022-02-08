@@ -36,15 +36,12 @@ class ChessAlarmActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val alarmId: Long?
         alarmId = if (savedInstanceState == null) {
-            Log.d("chess_alarm", "fetching audioId from intent.extras")
             val extras = intent.extras
             extras?.getLong("alarmId")
         } else {
-            Log.d("chess_alarm", "fetching audioId from savedInstanceState")
             savedInstanceState.getSerializable("alarmId") as Long?
         }
 
-        Log.d("chess_alarm", alarmId.toString())
 
         val database = AlarmsDatabase.getInstance(application).alarmsDatabaseDao
         val viewModelFactory = ChessAlarmViewModelFactory(database, alarmId!!, application)
@@ -67,18 +64,14 @@ class ChessAlarmActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 var puzzles = puzzleDatabase.getEligiblePuzzles(it!!.rating)
                 if (puzzles.size == 0) {
-                    Log.d("chess_alarm", "resetBeenPlayed")
                     puzzleDatabase.resetBeenPlayed()
                     puzzles = puzzleDatabase.getEligiblePuzzles(it!!.rating)
                 }
                 val puzzle = puzzles[0]
                 //val puzzle = puzzleDatabase.get(13003469153L)!!
-                Log.d("chess_alarm", "puzzle=${puzzle.toString()}")
-                Log.d("chess_alarm", "moves=${puzzle.moves}")
                 solution = parse_UCI(puzzle.moves)
                 binding.chessView.loadFEN(puzzle.FEN)
                 binding.chessView.play_move(solution!![0].first, solution!![0].second)
-                Log.d("chess_alarm", "board=${binding.chessView.board.board}")
                 solution = solution!!.slice(1 until solution!!.size)
 
                 updatePlayerToMove()
@@ -138,12 +131,8 @@ class ChessAlarmActivity : AppCompatActivity() {
                 on_solved()
                 return
             }
-            Log.d("on_move()", "played ($src, $dst), correct (${it[0]})")
             if (it[0].first != src || it[0].second != dst) {
-                Log.d(
-                    "on_move()",
-                    "wrong move, correct move is " + it[0].first.toString() + ", " + it[0].second.toString()
-                )
+
                 binding.chessView.indicateWrongMove(src, dst)
                 binding.chessView.coolDownBoard(viewModel.alarm.value!!.cooldown)
             } else {
@@ -152,7 +141,6 @@ class ChessAlarmActivity : AppCompatActivity() {
                     on_solved()
                     return
                 }
-                Log.d("chess", "opponent plays ${it[1]}")
                 // plays opponents move and then removes the moves played from solution
                 binding.chessView.play_move(it[1].first, it[1].second)
                 solution = it.slice(2 until it.size)
@@ -161,7 +149,6 @@ class ChessAlarmActivity : AppCompatActivity() {
     }
 
     private fun on_solved() {
-        Log.d("on_move()", "You solved the puzzle!")
         viewModel.stopAlarmAudio()
         AlarmReceiver.mediaPlayer?.stop()
         val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

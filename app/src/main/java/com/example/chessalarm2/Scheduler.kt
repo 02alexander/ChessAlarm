@@ -4,7 +4,6 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import com.example.chessalarm2.chessproblemalarm.AlarmReceiver
 import com.example.chessalarm2.database.alarms.Alarm
 import java.util.*
@@ -15,7 +14,6 @@ class Scheduler(val context: Context) {
 
     fun disableAlarm(alarm: Alarm) {
         val date = Date(alarm.time)
-        Log.d("disableAlarm", date.toString())
         for (day in alarm.days) {
             val alarmIntent = getAlarmIntent(alarm, day)
             alarmManager.cancel(alarmIntent)
@@ -39,7 +37,6 @@ class Scheduler(val context: Context) {
                 calendar.add(Calendar.DAY_OF_YEAR,7)
             }
             val alarmIntent = getAlarmIntent(alarm, day)
-            Log.d("scheduler", "set alarm at "+Date(calendar.timeInMillis).toString())
             /*alarmManager.set(
                 AlarmManager.ELAPSED_REALTIME_WAKEUP,
                 SystemClock.elapsedRealtime() + 1*1000,

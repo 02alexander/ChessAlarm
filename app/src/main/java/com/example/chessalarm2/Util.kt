@@ -5,7 +5,6 @@ import android.database.Cursor
 import android.media.MediaPlayer
 import android.net.Uri
 import android.provider.MediaStore
-import android.util.Log
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chessalarm2.chessproblemalarm.Chess
@@ -52,7 +51,6 @@ fun parse_UCI(UCI: String): List<Pair<Coordinate, Coordinate>> {
         }
         moves.add(Pair(src,dst))
     }
-    Log.d("parse_UCI", "moves=$moves")
     return moves
 }
 
@@ -85,7 +83,6 @@ fun playAudioFromId(context: Context, mediaPlayer: MediaPlayer, id: Long) {
     } else {
         new_id = id
     }
-    Log.d("playAudioFromId", "new_id = $new_id, id= $id")
     val path = getAudioPath(context, new_id)
     val uri = Uri.parse("file:///"+path)
     //mediaPlayer.reset()

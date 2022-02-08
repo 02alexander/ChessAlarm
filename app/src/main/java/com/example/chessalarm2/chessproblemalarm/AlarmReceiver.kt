@@ -9,7 +9,6 @@ import android.content.Intent
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.chessalarm2.R
 import com.example.chessalarm2.Scheduler
@@ -31,7 +30,6 @@ class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent?) {
 
-        Log.d("onReceive", "Received signal to start alarm")
 
         val t = Intent(context, ChessAlarmActivity::class.java)
         val alarmId = intent!!.extras!!.getLong("alarmId")
@@ -46,7 +44,6 @@ class AlarmReceiver : BroadcastReceiver() {
                     .setUsage(AudioAttributes.USAGE_ALARM)
                     .build()
             )
-            Log.d("onReceive", alarm.audioId.toString())
             playAudioFromId(context, mediaPlayer!!, alarm.audioId)
 
             val scheduler = Scheduler(context)
@@ -71,7 +68,6 @@ class AlarmReceiver : BroadcastReceiver() {
             notify(NOTIFICATION_ID, builder.build())
         }
 
-        Log.d("AlarmReceiver", "onReceive done")
 
     }
 

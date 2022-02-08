@@ -1,6 +1,5 @@
 package com.example.chessalarm2.chessproblemalarm
 
-import android.util.Log
 import kotlin.math.abs
 
 const val BOARD_SIZE = 8;
@@ -36,7 +35,6 @@ class Chess() {
         threatened_by_black = create_blank_board(false)
         threatened_by_white = create_blank_board(false)
 
-        //Log.d("Chess() init", parse_UCI("d3d6 f8d8 d6d8 f6d8").toString())
         //parse_FEN("5rk1/1p3ppp/pq3b2/8/8/1P1Q1N2/P4PPP/3R2K1 w - - 2 27")
         //parse_FEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 24")
     }
@@ -69,10 +67,8 @@ class Chess() {
 
     fun play_move(src: Coordinate, dst: Coordinate) {
         if (isPromotion(src, dst)) {
-            Log.d("chess", "played promotion move")
             promote(src,dst)
         } else if (isCastleMove(src, dst)) {
-            Log.d("chess", "played castle move")
             if (dst.x > src.x) {
                 castle(get(src).second, true)
             } else {
@@ -80,7 +76,6 @@ class Chess() {
             }
             en_passant_target = null
         } else if (isEnPassantMove(src, dst)) {
-            Log.d("chess", "played en passant")
             enPassant(src, dst)
         } else {
             en_passant_target = getEnPassantTarget(src,dst)
@@ -108,21 +103,18 @@ class Chess() {
         }.toMutableList()
 
         if (canCastle(player, true) && get(cord).first == Piece.KING) {
-            Log.d("chess", "$player can castle short")
             moves.add(when(player) {
                 Player.BLACK -> Coordinate(6, 0)
                 Player.WHITE -> Coordinate(6, 7)
             })
         }
         if (canCastle(player, false) && get(cord).first == Piece.KING) {
-            Log.d("chess", "$player can castle long")
             moves.add(when(player) {
                 Player.BLACK -> Coordinate(2, 0)
                 Player.WHITE -> Coordinate(2, 7)
             })
         }
         if (canEnPassant(cord)) {
-            Log.d("chess", "$cord can en passant to $en_passant_target")
             moves.add(en_passant_target!!)
         }
         val not_in_check_moves = mutableListOf<Coordinate>()
@@ -284,7 +276,6 @@ class Chess() {
                     val cpy = copy()
                     cpy.move_piece(cord, move)
                     if (!cpy.is_in_check(player)) {
-                        Log.d("chess", "not checkmate: <$cord, $move>")
                         return false
                     }
                 }
@@ -353,9 +344,7 @@ class Chess() {
         for (i in 1..(abs(dx)-1)) {
             val d = dx/abs(dx)
             val cord = Coordinate(king_start_cord.x+i*d, king_start_cord.y)
-            Log.d("chess", "castling: $cord checked for piece, d=$d, dx=$dx")
             if (get(cord).first != Piece.EMPTY) {
-                Log.d("chess", "castling: $cord is not empty")
                 return false
             }
         }
