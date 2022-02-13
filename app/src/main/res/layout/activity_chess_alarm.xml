@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.example.chessalarm2.chessproblemalarm.ChessView
+        <com.boss.chessalarm2.chessproblemalarm.ChessView
             android:id="@+id/chessView"
             android:layout_width="match_parent"
             android:layout_height="0dp"

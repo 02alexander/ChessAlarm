@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.chessalarm2">
+    android:versionCode="1"
+    android:versionName="1.0"
+    package="com.boss.chessalarm2">
 
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
@@ -12,7 +14,7 @@
         android:roundIcon="@mipmap/ic_king_logo_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ChessAlarm2">
-        <activity android:name=".MainActivity">
+        <activity android:name="com.boss.chessalarm2.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,16 +24,16 @@
 
         <activity
             android:screenOrientation="portrait"
-            android:name=".chessproblemalarm.ChessAlarmActivity" />
+            android:name="com.boss.chessalarm2.chessproblemalarm.ChessAlarmActivity" />
 
         <activity
             android:theme="@style/Theme.ChessAlarm2.CustomTheme"
-            android:name=".configure.SelectDaysActivity">
+            android:name="com.boss.chessalarm2.configure.SelectDaysActivity">
 
         </activity>
 
         <receiver
-            android:name=".chessproblemalarm.AlarmReceiver"
+            android:name="com.boss.chessalarm2.chessproblemalarm.AlarmReceiver"
             android:enabled="true"
             android:exported="true" >
             <intent-filter>
@@ -41,7 +43,7 @@
         </receiver>
 
         <receiver
-            android:name=".chessproblemalarm.BootCompletedReceiver"
+            android:name="com.boss.chessalarm2.chessproblemalarm.BootCompletedReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>

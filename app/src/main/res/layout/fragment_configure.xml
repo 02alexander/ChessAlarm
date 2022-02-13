@@ -47,7 +47,7 @@
                 android:background="@drawable/pop_out_border"
                 android:ems="10"
                 android:inputType="number"
-                android:hint="Rating (700-3000)"
+                android:hint="Puzzle rating (700-3000)"
                 app:layout_constraintBottom_toTopOf="@+id/editDays"
                 app:layout_constraintStart_toStartOf="@+id/editTime"
                 app:layout_constraintTop_toBottomOf="@+id/editTime" />
@@ -56,16 +56,17 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editCooldown"
-                android:layout_width="200dp"
+                android:layout_width="353dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/pop_out_border"
                 android:ems="10"
-                android:inputType="number"
-                android:hint="Cooldown between wrong moves (seconds)" />
+                android:hint="Cooldown between wrong moves (seconds)"
+                android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Spinner

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/alarmsFragment"
-        android:name="com.example.chessalarm2.alarms.AlarmsFragment"
+        android:name="com.boss.chessalarm2.alarms.AlarmsFragment"
         android:label="AlarmsFragment" >
         <action
             android:id="@+id/action_alarmsFragment_to_configureFragment"
@@ -15,7 +15,7 @@
     </fragment>
     <fragment
         android:id="@+id/configureFragment"
-        android:name="com.example.chessalarm2.configure.ConfigureFragment"
+        android:name="com.boss.chessalarm2.configure.ConfigureFragment"
         android:label="fragment_configure"
         tools:layout="@layout/fragment_configure" >
         <argument

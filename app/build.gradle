@@ -11,7 +11,7 @@ android {
     buildToolsVersion "30.0.0"
 
     defaultConfig {
-        applicationId "com.example.chessalarm2"
+        applicationId "com.boss.chessalarm2"
         minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
