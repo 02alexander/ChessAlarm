@@ -33,7 +33,6 @@ class Scheduler(val context: Context) {
                 set(Calendar.DAY_OF_WEEK, day+2)
             }
             if (calendar.timeInMillis < System.currentTimeMillis()+3000) {
-
                 calendar.add(Calendar.DAY_OF_YEAR,7)
             }
             val alarmIntent = getAlarmIntent(alarm, day)

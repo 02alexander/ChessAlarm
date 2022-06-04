@@ -30,10 +30,16 @@ class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent?) {
 
-
-        val t = Intent(context, ChessAlarmActivity::class.java)
+        val t = Intent(context, SnoozeActivity::class.java)
         val alarmId = intent!!.extras!!.getLong("alarmId")
         t.putExtra("alarmId", alarmId)
+
+
+
+        /*val t = Intent(context, ChessAlarmActivity::class.java)
+        val alarmId = intent!!.extras!!.getLong("alarmId")
+        t.putExtra("alarmId", alarmId)
+        */
 
         val database = AlarmsDatabase.getInstance(context).alarmsDatabaseDao
         GlobalScope.launch {
@@ -47,6 +53,7 @@ class AlarmReceiver : BroadcastReceiver() {
             playAudioFromId(context, mediaPlayer!!, alarm.audioId)
 
             val scheduler = Scheduler(context)
+
 
             scheduler.disableAlarm(alarm)
             scheduler.enableAlarm(alarm)
